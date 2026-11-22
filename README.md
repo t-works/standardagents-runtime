@@ -5,8 +5,8 @@ threads with durable state, subagents, hooks, tool execution, a scoped environme
 and a sandboxed code execution engine (QuickJS) with module graph, resource limits
 and termination.
 
-Source is published as TypeScript and runs directly on Node's type stripping — no
-build step, no compiled output.
+The repository source is plain TypeScript that runs directly on Node — no bundler.
+The published package ships `dist/` compiled JavaScript with type declarations.
 
 ## Requirements
 
