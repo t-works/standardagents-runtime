@@ -81,4 +81,4 @@ rebuilt by `prepack` and is not committed.
 
 ## License
 
-No license has been chosen for this package yet.
+MIT — see [LICENSE](LICENSE).
