@@ -1,0 +1,4 @@
+node_modules/
+.standard-agent/
+dist/
+*.tgz

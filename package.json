@@ -1,0 +1,73 @@
+{
+  "name": "@t-works/standardagents-runtime",
+  "version": "0.2.0",
+  "description": "Reference Standard Agents runtime: threads, subagents, hooks, tools and a sandboxed code execution engine (specification 0.2.0).",
+  "type": "module",
+  "bin": {
+    "standard-agent": "./dist/cli.js"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/runtime.d.ts",
+      "default": "./dist/runtime.js"
+    },
+    "./thread": {
+      "types": "./dist/thread.d.ts",
+      "default": "./dist/thread.js"
+    },
+    "./store": {
+      "types": "./dist/store.d.ts",
+      "default": "./dist/store.js"
+    },
+    "./loader": {
+      "types": "./dist/loader.d.ts",
+      "default": "./dist/loader.js"
+    },
+    "./sandbox": {
+      "types": "./dist/sandbox.d.ts",
+      "default": "./dist/sandbox.js"
+    },
+    "./hooks": {
+      "types": "./dist/hooks.d.ts",
+      "default": "./dist/hooks.js"
+    },
+    "./contract": {
+      "types": "./dist/contract.d.ts",
+      "default": "./dist/contract.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "typecheck": "tsc -p tsconfig.json",
+    "test": "node --test *.test.ts",
+    "prepack": "npm run build"
+  },
+  "engines": {
+    "node": ">=22.18"
+  },
+  "keywords": [
+    "standard-agents",
+    "agents",
+    "runtime",
+    "sandbox"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/t-works/standardagents-runtime.git"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "dependencies": {
+    "@standardagents/spec": "^0.45.10",
+    "quickjs-emscripten": "^0.32.0",
+    "zod": "^4.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.6",
+    "typescript": "^5.9.3"
+  }
+}
