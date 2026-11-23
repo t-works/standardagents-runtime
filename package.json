@@ -1,6 +1,6 @@
 {
   "name": "@t-works/standardagents-runtime",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "Reference Standard Agents runtime: threads, subagents, hooks, tools and a sandboxed code execution engine (specification 0.2.0).",
   "license": "MIT",
   "type": "module",
