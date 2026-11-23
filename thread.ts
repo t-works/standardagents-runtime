@@ -145,7 +145,7 @@ export class Thread implements ThreadState {
   setStatusRecord(status: ThreadStatus): void {
     this.data.status = status;
     this.save();
-    this.runtime.notify({ type: 'status', status });
+    this.runtime.notify({ type: 'status', threadId: this.data.id, status });
   }
 
   // ── messages ────────────────────────────────────────────────────────────
@@ -209,7 +209,7 @@ export class Thread implements ThreadState {
       try {
         data = await hook.execute(this, messageId, data, this.hookContext(hook));
       } catch (error) {
-        this.runtime.log('warn', `before_update_message '${hook.id}' failed: ${errorMessage(error)}`);
+        this.runtime.log('warn', `before_update_message '${hook.id}' failed: ${errorMessage(error)}`, this.data.id);
       }
     }
     const next: Message = {
@@ -219,12 +219,12 @@ export class Thread implements ThreadState {
     };
     this.messages[index] = next;
     this.store.saveMessages(this.data.id, this.messages);
-    this.runtime.notify({ type: 'message_updated', message: next });
+    this.runtime.notify({ type: 'message_updated', threadId: this.data.id, message: next });
     for (const hook of this.threadHooks('after_update_message')) {
       try {
         await hook.execute(this, next, this.hookContext(hook));
       } catch (error) {
-        this.runtime.log('warn', `after_update_message '${hook.id}' failed: ${errorMessage(error)}`);
+        this.runtime.log('warn', `after_update_message '${hook.id}' failed: ${errorMessage(error)}`, this.data.id);
       }
     }
     return next;
@@ -273,12 +273,12 @@ export class Thread implements ThreadState {
     }
     this.messages.push(message);
     this.store.saveMessages(this.data.id, this.messages);
-    this.runtime.notify({ type: 'message', message });
+    this.runtime.notify({ type: 'message', threadId: this.data.id, message });
     for (const hook of this.threadHooks('after_create_message')) {
       try {
         await hook.execute(this, message, this.hookContext(hook));
       } catch (error) {
-        this.runtime.log('warn', `after_create_message '${hook.id}' failed: ${errorMessage(error)}`);
+        this.runtime.log('warn', `after_create_message '${hook.id}' failed: ${errorMessage(error)}`, this.data.id);
       }
     }
     return message;
@@ -410,6 +410,7 @@ export class Thread implements ThreadState {
     parent.save();
     this.runtime.notify({
       type: 'subagent',
+      threadId: parent.data.id,
       reference: entry.reference,
       relationship: entry.relationship,
       name: entry.name,
@@ -644,7 +645,7 @@ export class Thread implements ThreadState {
         const record = this.files.importFrom(parent.files.root, source);
         out.push({ id: record.path, type: 'file', path: record.path, name: record.name, mimeType: record.mimeType, size: record.size });
       } catch (error) {
-        this.runtime.log('warn', `Could not copy attachment '${source}' to the child: ${errorMessage(error)}`);
+        this.runtime.log('warn', `Could not copy attachment '${source}' to the child: ${errorMessage(error)}`, this.data.id);
       }
     }
     return out;

@@ -53,7 +53,7 @@ test('tool results and emitted events come back masked, text values visible', as
 
     runtime.emit(thread, 'tick', { note: `uses ${SECRET}` });
     const emitted = events.find((event) => event.type === 'event');
-    assert.deepEqual(emitted, { type: 'event', event: 'tick', data: { note: 'uses [redacted:LEAF_SECRET]' } });
+    assert.deepEqual(emitted, { type: 'event', threadId: thread.threadId, event: 'tick', data: { note: 'uses [redacted:LEAF_SECRET]' } });
   } finally {
     rmSync(root, { recursive: true, force: true });
   }

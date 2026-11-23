@@ -10,17 +10,23 @@ import type { Registry } from './loader.ts';
 import type { ThreadRecord, ThreadStore } from './store.ts';
 import type { Thread } from './thread.ts';
 
+/**
+ * `threadId` names the thread the event reports on, so one sink can serve several
+ * live threads: the thread whose message/status/tool/effect it is, or — for
+ * `subagent` events — the parent whose `children[]` entry changed (`reference`
+ * still names the child).
+ */
 export type RuntimeEvent =
-  | { type: 'message'; message: Message }
-  | { type: 'message_updated'; message: Message }
-  | { type: 'tool_started'; name: string; progress?: string }
-  | { type: 'tool_done'; name: string; status: 'success' | 'error'; error?: string }
-  | { type: 'status'; status: ThreadStatus }
-  | { type: 'event'; event: string; data: unknown }
-  | { type: 'subagent'; reference: string; relationship: string; name: string; status: string }
-  | { type: 'effect'; id: string; name: string }
-  | { type: 'error'; message: string }
-  | { type: 'log'; level: 'info' | 'warn' | 'error'; message: string };
+  | { type: 'message'; threadId: string; message: Message }
+  | { type: 'message_updated'; threadId: string; message: Message }
+  | { type: 'tool_started'; threadId: string; name: string; progress?: string }
+  | { type: 'tool_done'; threadId: string; name: string; status: 'success' | 'error'; error?: string }
+  | { type: 'status'; threadId: string; status: ThreadStatus }
+  | { type: 'event'; threadId: string; event: string; data: unknown }
+  | { type: 'subagent'; threadId: string; reference: string; relationship: string; name: string; status: string }
+  | { type: 'effect'; threadId: string; id: string; name: string }
+  | { type: 'error'; threadId: string; message: string }
+  | { type: 'log'; threadId: string; level: 'info' | 'warn' | 'error'; message: string };
 
 export interface SessionStopOptions {
   result?: string;
@@ -47,6 +53,6 @@ export interface RuntimeLike {
   notify(event: RuntimeEvent): void;
   /** One live Thread instance per thread id, shared by every runtime surface. */
   threadFor(record: ThreadRecord): Thread;
-  log(level: 'info' | 'warn' | 'error', message: string): void;
+  log(level: 'info' | 'warn' | 'error', message: string, threadId: string): void;
   instanceEnv(name: string): string | undefined;
 }

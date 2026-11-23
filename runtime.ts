@@ -149,8 +149,8 @@ export class Runtime implements RuntimeLike {
     return this.envLookup(name);
   }
 
-  log(level: 'info' | 'warn' | 'error', message: string): void {
-    this.onEvent?.({ type: 'log', level, message });
+  log(level: 'info' | 'warn' | 'error', message: string, threadId: string): void {
+    this.onEvent?.({ type: 'log', level, message, threadId });
   }
 
   emit(thread: Thread, event: string, data: unknown): void {
@@ -160,7 +160,7 @@ export class Runtime implements RuntimeLike {
     } catch {
       // Non-JSON payloads pass through; env values only arrive as text.
     }
-    this.onEvent?.({ type: 'event', event, data: redacted });
+    this.onEvent?.({ type: 'event', threadId: thread.threadId, event, data: redacted });
   }
 
   notify(event: RuntimeEvent): void {
@@ -183,7 +183,7 @@ export class Runtime implements RuntimeLike {
       try {
         await hook.execute(thread, context);
       } catch (error) {
-        this.log('warn', `after_thread_created '${hook.id}' failed: ${errorMessage(error)}`);
+        this.log('warn', `after_thread_created '${hook.id}' failed: ${errorMessage(error)}`, thread.threadId);
       }
     }
     return thread;
@@ -203,7 +203,7 @@ export class Runtime implements RuntimeLike {
       if (parent && entry) {
         entry.status = 'running';
         parent.save();
-        this.notify({ type: 'subagent', reference: entry.reference, relationship: entry.relationship, name: entry.name, status: 'running' });
+        this.notify({ type: 'subagent', threadId: parent.threadId, reference: entry.reference, relationship: entry.relationship, name: entry.name, status: 'running' });
       }
     }
     const done = execution.run().finally(() => {
@@ -627,7 +627,7 @@ export class Runtime implements RuntimeLike {
     };
     parent.data.children.push(entry);
     parent.save();
-    this.notify({ type: 'subagent', reference: entry.reference, relationship: entry.relationship, name: entry.name, status: entry.status });
+    this.notify({ type: 'subagent', threadId: parent.threadId, reference: entry.reference, relationship: entry.relationship, name: entry.name, status: entry.status });
 
     const child = this.threadFor(record);
     await this.spawnImmediate(child);
@@ -635,7 +635,7 @@ export class Runtime implements RuntimeLike {
       try {
         await hook.execute(parent, child, context);
       } catch (error) {
-        this.log('warn', `after_subagent_created '${hook.id}' failed: ${errorMessage(error)}`);
+        this.log('warn', `after_subagent_created '${hook.id}' failed: ${errorMessage(error)}`, parent.threadId);
       }
     }
 
@@ -706,20 +706,20 @@ export class Runtime implements RuntimeLike {
     this.timers.delete(`${threadId}:${effectId}`);
     const definition = this.registry.effects.get(unqualify(scheduled.name));
     if (!definition) {
-      this.log('warn', `Effect '${scheduled.name}' is not defined`);
+      this.log('warn', `Effect '${scheduled.name}' is not defined`, threadId);
       return;
     }
     const [description, argsSchema, handler] = definition as [string, unknown, (state: ThreadState, args: unknown) => unknown];
     const validated = validateArgs(argsSchema, scheduled.args);
     if (!validated.ok) {
-      this.log('warn', `Effect '${scheduled.name}' arguments invalid: ${validated.error}`);
+      this.log('warn', `Effect '${scheduled.name}' arguments invalid: ${validated.error}`, threadId);
       return;
     }
-    this.notify({ type: 'effect', id: scheduled.id, name: scheduled.name });
+    this.notify({ type: 'effect', threadId, id: scheduled.id, name: scheduled.name });
     try {
       await handler(this.threadFor(record), validated.value);
     } catch (error) {
-      this.log('error', `Effect '${scheduled.name}' (${description}) failed: ${errorMessage(error)}`);
+      this.log('error', `Effect '${scheduled.name}' (${description}) failed: ${errorMessage(error)}`, threadId);
     }
   }
 
@@ -821,7 +821,7 @@ class Execution {
 
   /** Log lines can quote tool output, so thread secrets never reach the sink unmasked. */
   private log(level: 'info' | 'warn' | 'error', message: string): void {
-    this.runtime.log(level, this.thread.redact(message));
+    this.runtime.log(level, this.thread.redact(message), this.thread.threadId);
   }
 
   async run(): Promise<void> {
@@ -829,7 +829,7 @@ class Execution {
     this.thread.lastSessionResult = null;
     this.thread.data.status = { state: 'running', since: started, reason: null };
     this.thread.save();
-    this.runtime.notify({ type: 'status', status: this.thread.data.status });
+    this.runtime.notify({ type: 'status', threadId: this.thread.threadId, status: this.thread.data.status });
     try {
       await this.drainQueuedTools();
       await this.loop();
@@ -837,7 +837,7 @@ class Execution {
       this.endReason = this.endReason ?? 'fatal_error';
       this.sessionFailed = true;
       this.log('error', `${this.thread.agentId}/${this.thread.threadId}: ${errorMessage(error)}`);
-      this.runtime.onEvent?.({ type: 'error', message: errorMessage(error) });
+      this.runtime.onEvent?.({ type: 'error', threadId: this.thread.threadId, message: errorMessage(error) });
     } finally {
       await this.settle();
     }
@@ -907,7 +907,7 @@ class Execution {
       try {
         await handler.execute(this.thread, message);
       } catch (error) {
-        this.runtime.onEvent?.({ type: 'error', message: `Handler '${config.handler}' failed: ${errorMessage(error)}` });
+        this.runtime.onEvent?.({ type: 'error', threadId: this.thread.threadId, message: `Handler '${config.handler}' failed: ${errorMessage(error)}` });
         this.log('error', `Handler '${config.handler}' failed: ${errorMessage(error)}`);
       }
     }
@@ -939,7 +939,7 @@ class Execution {
         response = await this.runtime.callModel(this.thread, prompt, request);
       } catch (error) {
         this.log('error', `Model call failed (${prompt.model}): ${errorMessage(error)}`);
-        this.runtime.onEvent?.({ type: 'error', message: `Model call failed (${prompt.model}): ${errorMessage(error)}` });
+        this.runtime.onEvent?.({ type: 'error', threadId: this.thread.threadId, message: `Model call failed (${prompt.model}): ${errorMessage(error)}` });
         this.endReason = 'step_error';
         this.sessionFailed = true;
         return { kind: 'session', reason: 'step_error' };
@@ -1274,7 +1274,7 @@ class Execution {
     const spec = this.toolSpecs.find((entry) => entry.name === call.name);
     const toolCall: HookToolCall = { id: call.id, type: 'function', function: { name: call.name, arguments: JSON.stringify(call.arguments) } };
     const progress = spec?.definition?.progressArgument ? asText(call.arguments[spec.definition.progressArgument]) : undefined;
-    this.runtime.onEvent?.({ type: 'tool_started', name: call.name, progress });
+    this.runtime.onEvent?.({ type: 'tool_started', threadId: this.thread.threadId, name: call.name, progress });
     for (const { hook, context } of this.runtime.hookEntries(this.thread, 'tool_call_started')) {
       try {
         await hook.execute(this.thread, toolCall, progress, context);
@@ -1309,7 +1309,7 @@ class Execution {
       attachments: attachments.length ? attachments : null,
       prompt: promptName,
     });
-    this.runtime.onEvent?.({ type: 'tool_done', name: call.name, status: result.status, error: result.error });
+    this.runtime.onEvent?.({ type: 'tool_done', threadId: this.thread.threadId, name: call.name, status: result.status, error: result.error });
     for (const { hook, context } of this.runtime.hookEntries(this.thread, 'tool_call_done')) {
       try {
         await hook.execute(this.thread, toolCall, result as HookToolResult, context);
@@ -1526,7 +1526,7 @@ class Execution {
     this.thread.save();
     this.thread.activePrompt = null;
     this.thread.activeSide = null;
-    this.runtime.notify({ type: 'status', status });
+    this.runtime.notify({ type: 'status', threadId: this.thread.threadId, status });
     await this.thread.setStatus(status.state === 'failed' ? 'failed' : this.endReason === 'awaiting_human' ? 'awaiting_human' : 'idle');
   }
 
