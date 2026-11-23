@@ -1193,6 +1193,14 @@ class Execution {
           const details = parseJson<unknown[] | null>((message as Message).reasoning_details, null);
           if (details) row.reasoningDetails = details;
         }
+        // A turn with no text and no calls says nothing. Providers reject it once
+        // tools are declared (deepseek 400s: "reasoning_content must be passed
+        // back"), and reasoning cannot rescue it because the provider may drop
+        // reasoning on the way out. It arises when the calls were trimmed by
+        // includePastTools, or when the model itself answered empty.
+        const text = typeof row.content === 'string' ? row.content.trim() : row.content;
+        const hasText = typeof text === 'string' ? text !== '' : Array.isArray(text) && text.length > 0;
+        if (!hasText && !calls.length) continue;
         out.push(row);
       } else {
         if (!content || (typeof content === 'string' && content.trim() === '')) continue;
