@@ -107,8 +107,10 @@ from the other side — so a new user message starts with no tool history: the
 agent keeps its own text from earlier turns, but not the calls it made or what
 they returned. Set `includePastTools: true` when an agent must remember tool
 work from earlier turns; the default suits an exchange that finishes inside one
-turn. Either way the calls and results of the turn in progress are always sent,
-so the flag never breaks a single turn.
+turn. Session history is not what this flag trims: the whole thread still rides
+the request in order, and `includePastTools` only decides whether its tool calls
+and results do. Either way the calls and results of the turn in progress are
+always sent, so the flag never breaks a single turn.
 
 ## Development
 
