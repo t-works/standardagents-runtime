@@ -100,11 +100,21 @@ sandboxed code may return promises, and the sandbox waits for them however long
 they take: a 30ms timer is fine. What it will not do is wait past the end of the
 run — a call that settles after your run is finished is dropped.
 
+**The model re-does work from earlier turns.** `includePastTools` defaults to
+`false`: each request carries the calls and results of the turn being run, and
+none from the turns before it. A turn is bounded by a message from the other
+side, so a new user message starts with an empty tool history — an agent working
+across several messages behaves as if it had forgotten what it already did. Set
+`includePastTools: true` when an agent must remember tool work from earlier
+turns; the default suits an exchange that finishes inside one turn. Either way
+the calls and results of the turn in progress are always sent, so the flag never
+breaks a single turn.
+
 ## Development
 
 ```bash
 npm install
-npm test            # node --test *.test.ts — 36 tests
+npm test            # node --test *.test.ts — 40 tests
 npm run typecheck   # tsc -p tsconfig.json, strict, no emit
 npm run build       # tsc -p tsconfig.build.json → dist/ (runs on prepack)
 ```
