@@ -35,16 +35,33 @@ function blank(row: ProviderMessage): boolean {
   return row.role === 'assistant' && !hasText && !hasCalls;
 }
 
+type Thread = Awaited<ReturnType<Runtime['createThread']>>;
+
 async function run(
   request: string,
   script: ProviderResponse[],
   tweak: (registry: Awaited<ReturnType<typeof loadSource>>['registry']) => void,
+  onRequest?: (index: number, thread: Thread) => Promise<void> | void,
 ): Promise<ProviderRequest[]> {
   const root = mkdtempSync(path.join(tmpdir(), 'sa-context-'));
   try {
     const { registry } = await loadSource(FIXTURES);
     const { requests, provider } = scripted(script);
-    registry.models.set('scripted', { ...registry.models.get('scripted')!, provider });
+    const factory = provider as unknown as () => { generate: (request: ProviderRequest) => Promise<ProviderResponse> };
+    const wrapped = (() => {
+      const instance = factory();
+      if (!onRequest) return instance;
+      const reply = instance.generate.bind(instance);
+      return {
+        ...instance,
+        generate: async (request: ProviderRequest) => {
+          const captured = await reply(request);
+          await onRequest(requests.length, thread);
+          return captured;
+        },
+      };
+    }) as unknown as ModelDefinition['provider'];
+    registry.models.set('scripted', { ...registry.models.get('scripted')!, provider: wrapped });
     tweak(registry);
     const runtime = new Runtime({
       store: new ThreadStore(root, { keyFile: path.join(root, 'store.key') }),
@@ -60,25 +77,23 @@ async function run(
   }
 }
 
+const roles = (request: ProviderRequest): string[] => request.messages.map((row) => row.role);
+const callIds = (request: ProviderRequest): string[] =>
+  request.messages.flatMap((row) => ((row as unknown as { toolCalls?: Array<{ id: string }> }).toolCalls ?? []).map((call) => call.id));
+const toolIds = (request: ProviderRequest): string[] =>
+  request.messages.flatMap((row) => ((row as unknown as { toolCallId?: string }).toolCallId ? [(row as unknown as { toolCallId: string }).toolCallId] : []));
+
 /**
- * A thinking provider rejects an assistant turn with no text, no calls and no
- * reasoning once tools are declared (deepseek: "The `reasoning_content` in the
- * thinking mode must be passed back to the API"). Two ways in: the calls were
- * trimmed by `includePastTools`, or the model answered empty.
+ * With `includePastTools` off, the turn in progress keeps every call and result
+ * it made: the step cannot continue without its own exchange, and a cutoff
+ * inside one turn makes the model redo work it already did.
  */
-test('a turn whose calls were trimmed from the history is not sent as an empty assistant message', async () => {
+test('past tools off keeps the calls and results of the turn in progress', async () => {
   const requests = await run(
     'go',
     [
-      {
-        content: null,
-        // A thinking model's tool call carries reasoning; the provider may drop it on
-        // the way out, so reasoning must not keep the otherwise empty row alive.
-        reasoning: 'I should call record with the value one.',
-        finishReason: 'tool_calls',
-        toolCalls: [{ id: 'call_1', name: 'record', arguments: { value: 'one' } }],
-        usage: ZERO_USAGE,
-      },
+      { content: null, finishReason: 'tool_calls', toolCalls: [{ id: 'call_1', name: 'record', arguments: { value: 'one' } }], usage: ZERO_USAGE },
+      { content: null, finishReason: 'tool_calls', toolCalls: [{ id: 'call_2', name: 'record', arguments: { value: 'two' } }], usage: ZERO_USAGE },
       { content: 'done', finishReason: 'stop', usage: ZERO_USAGE },
     ],
     (registry) => {
@@ -87,12 +102,44 @@ test('a turn whose calls were trimmed from the history is not sent as an empty a
     },
   );
 
-  assert.equal(requests.length, 2, 'the run took a second step');
-  assert.deepEqual(
-    requests[1].messages.map((row) => row.role),
-    ['system', 'user'],
-    'the trimmed call leaves nothing behind: no empty assistant row, and no tool row either',
+  assert.equal(requests.length, 3, 'the run took three steps');
+  assert.deepEqual(roles(requests[1]), ['system', 'user', 'assistant', 'tool'], 'the first step keeps its call and result');
+  assert.deepEqual(callIds(requests[1]), ['call_1']);
+  assert.deepEqual(toolIds(requests[1]), ['call_1']);
+  assert.deepEqual(callIds(requests[2]), ['call_1', 'call_2'], 'the second step keeps both exchanges of the same turn');
+  assert.deepEqual(toolIds(requests[2]), ['call_1', 'call_2']);
+  for (const [index, request] of requests.entries()) {
+    assert.ok(!request.messages.some(blank), `request ${index + 1} carries no empty assistant row`);
+  }
+});
+
+/** A turn boundary is the newest message from the other side; older exchanges go whole. */
+test("past tools off drops the previous turn's exchange and keeps the newest", async () => {
+  const requests = await run(
+    'go',
+    [
+      { content: null, finishReason: 'tool_calls', toolCalls: [{ id: 'call_1', name: 'record', arguments: { value: 'one' } }], usage: ZERO_USAGE },
+      { content: 'noted', finishReason: 'stop', usage: ZERO_USAGE },
+      { content: 'done', finishReason: 'stop', usage: ZERO_USAGE },
+    ],
+    (registry) => {
+      const prompt = registry.prompts.get('probe_prompt')!;
+      registry.prompts.set('probe_prompt', { ...prompt, includePastTools: false });
+    },
+    async (index, thread) => {
+      if (index === 2) await thread.queueMessage({ role: 'user', content: 'next turn' });
+    },
   );
+
+  assert.equal(requests.length, 3, 'the queued message started a second turn');
+  assert.deepEqual(callIds(requests[1]), ['call_1'], 'the first turn keeps its call and result');
+  assert.deepEqual(toolIds(requests[1]), ['call_1']);
+  assert.deepEqual(callIds(requests[2]), [], 'the second turn carries no calls from the first');
+  assert.deepEqual(toolIds(requests[2]), []);
+  assert.deepEqual(roles(requests[2]), ['system', 'user', 'assistant', 'user'], 'the older call row stays as plain text');
+  for (const [index, request] of requests.entries()) {
+    assert.ok(!request.messages.some(blank), `request ${index + 1} carries no empty assistant row`);
+  }
 });
 
 test('a model reply with no content and no calls is not sent back as an empty assistant message', async () => {

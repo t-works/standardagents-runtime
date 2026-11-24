@@ -1164,13 +1164,23 @@ class Execution {
     model: ModelDefinition | undefined,
   ): Promise<LLMMessage[]> {
     const includePastTools = prompt.includePastTools ?? false;
+    // Past tools off keeps every call and result of the turn in progress, which
+    // starts after the newest message from the other side. Cutting at the last
+    // call instead makes the model redo work it already did (measured live:
+    // five record calls, no answer), and an exchange is kept or dropped whole,
+    // since a call without its results is a provider error.
+    const turnStart = rows.reduce(
+      (start, message, index) => (message.role !== 'system' && sideOfMessage(message) !== side ? index + 1 : start),
+      0,
+    );
+    const keepsTools = (index: number) => includePastTools || index >= turnStart;
     const threshold = prompt.recentImageThreshold ?? 10;
     const out: LLMMessage[] = [];
     for (const [index, message] of rows.entries()) {
       if (message.role === 'system') continue;
       const own = sideOfMessage(message) === side;
       if (message.role === 'tool') {
-        if (!includePastTools || !own) continue;
+        if (!own || !keepsTools(index)) continue;
         out.push({
           role: 'tool',
           toolCallId: message.tool_call_id,
@@ -1181,7 +1191,7 @@ class Execution {
       }
       const content = await this.contentFor(message as Message, rows.length - index <= threshold, model);
       if (own) {
-        const calls = includePastTools ? parseToolCalls(message.tool_calls) : [];
+        const calls = keepsTools(index) ? parseToolCalls(message.tool_calls) : [];
         const row: LLMMessage = {
           role: 'assistant',
           content: content ?? null,
