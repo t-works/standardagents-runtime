@@ -74,6 +74,32 @@ await runtime.settle();
 | `./hooks` | hook resolution and relationship flags |
 | `./contract` | `RuntimeLike`, the surface a `Thread` needs from its runtime |
 
+## Common mistakes
+
+**A subagent can't find a file you gave it.** Pass the path as it exists in the
+parent. The runtime copies the file into the child's own folder under the same
+relative path, so the child reads `notes.txt` and gets the copy. You can hand a
+child a file and no message text. If the path does not exist, the log carries a
+warning and that file is skipped; the call still succeeds.
+
+**A hook you required from a child never runs.** `parentHooks` may only name
+hooks that run in a thread (like `before_create_message`, `filter_messages`).
+Hooks about the person using your app (`user_value_changed`,
+`user_client_attached`, `user_client_detached`) run in their session, so a
+requirement naming one stops the package from loading. That is deliberate: you
+find out at load time instead of wondering why nothing happened.
+
+**A secret turned up in a tool result.** Env passed to a child is readable from
+code only, with `state.env('NAME')`. To let the model see a name or a short
+description, say so with `nameEnv` / `descriptionEnv`. The runtime keeps env out
+of prompt text; it cannot keep it out of a result your own tool returns — a tool
+that returns the `state.env()` snapshot has put that snapshot in the result.
+
+**A function inside the sandbox never finishes.** Functions you expose to
+sandboxed code may return promises, and the sandbox waits for them however long
+they take: a 30ms timer is fine. What it will not do is wait past the end of the
+run — a call that settles after your run is finished is dropped.
+
 ## Development
 
 ```bash
