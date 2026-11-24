@@ -1,9 +1,17 @@
 # @t-works/standardagents-runtime
 
-Reference implementation of the [Standard Agents runtime specification 0.2.0](https://standardagentspec.org/0.2.0/infrastructure/runtime):
-threads with durable state, subagents, hooks, tool execution, a scoped environment,
+## Why it exists?
+I created it as my workflow executor. 
+Standard agents concept seems to be a good way to maintain well-structured and flexible workflows. 
+My project workflows are part of a bigger thing and need to run in restricted environments, 3-rd party dependency or network connection is a non-starter. 
+
+## What is this?
+Implementation of [Standard Agents runtime specification 0.2.0](https://standardagentspec.org/0.2.0/infrastructure/runtime) intended for local only execution. 
+Covers: threads with durable state, subagents, hooks, tool execution, a scoped environment,
 and a sandboxed code execution engine (QuickJS) with module graph, resource limits
 and termination.
+
+State is simple file based KV store stored in project threads folder.  
 
 The repository source is plain TypeScript that runs directly on Node — no bundler.
 The published package ships `dist/` compiled JavaScript with type declarations.
