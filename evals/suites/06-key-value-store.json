@@ -1,0 +1,112 @@
+{
+  "suite": "key-value-store",
+  "about": "Durable per-thread key-value store semantics.",
+  "cases": [
+    {
+      "id": "kv-01-json-roundtrip",
+      "agent": "probe",
+      "requirements": [
+        "S14K-4",
+        "S14K-2"
+      ],
+      "why": "A nested JSON value survives a write/read round trip in the same execution.",
+      "ops": [
+        {
+          "send": "[[once]][[tool:kv {\"op\":\"set\",\"key\":\"probe.obj\",\"value\":{\"a\":[1,2],\"b\":null}}]][[tool:kv {\"op\":\"get\",\"key\":\"probe.obj\"}]]"
+        }
+      ],
+      "expect": [
+        {
+          "kind": "tools.results",
+          "index": 1,
+          "equals": "{\"a\":[1,2],\"b\":null}"
+        },
+        {
+          "kind": "status",
+          "equals": "idle"
+        }
+      ]
+    },
+    {
+      "id": "kv-02-missing-and-delete",
+      "agent": "probe",
+      "requirements": [
+        "S14K-5",
+        "S14K-6"
+      ],
+      "why": "A missing key reads null; setValue(null) deletes; the next read is null again.",
+      "ops": [
+        {
+          "send": "[[once]][[tool:kv {\"op\":\"get\",\"key\":\"kv.missing\"}]][[tool:kv {\"op\":\"set\",\"key\":\"kv.missing\",\"value\":null}]][[tool:kv {\"op\":\"get\",\"key\":\"kv.missing\"}]]"
+        }
+      ],
+      "expect": [
+        {
+          "kind": "tools.results",
+          "equals": [
+            "null",
+            "null",
+            "null"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kv-03-durable-across-executions",
+      "agent": "probe",
+      "requirements": [
+        "S14K-1",
+        "S14K-2",
+        "S14K-7"
+      ],
+      "why": "A value written in one execution is readable in a later execution of the same thread.",
+      "ops": [
+        {
+          "send": "[[once]][[tool:kv {\"op\":\"set\",\"key\":\"kv.durable\",\"value\":41}]]"
+        },
+        {
+          "settle": true
+        },
+        {
+          "send": "[[once]][[tool:kv {\"op\":\"get\",\"key\":\"kv.durable\"}]]"
+        }
+      ],
+      "expect": [
+        {
+          "kind": "tools.results",
+          "index": 1,
+          "equals": "41"
+        },
+        {
+          "kind": "status",
+          "equals": "idle"
+        }
+      ]
+    },
+    {
+      "id": "kv-04-isolation-from-child",
+      "agent": "orchestrator",
+      "requirements": [
+        "S14K-3",
+        "S14K-8"
+      ],
+      "why": "A child cannot read the parent key space and does not inherit parent values.",
+      "ops": [
+        {
+          "send": "[[once]][[tool:kv {\"op\":\"set\",\"key\":\"kv.secret\",\"value\":\"parent-only\"}]][[tool:subagent_create {\"agent\":\"worker\",\"name\":\"w1\",\"arguments\":{\"task\":\"[[once]][[tool:kv {\\\"op\\\":\\\"get\\\",\\\"key\\\":\\\"kv.secret\\\"}]]\"}}]]"
+        },
+        {
+          "settle": true
+        }
+      ],
+      "expect": [
+        {
+          "kind": "tools.results",
+          "thread": "child:worker",
+          "index": 0,
+          "equals": "null"
+        }
+      ]
+    }
+  ]
+}

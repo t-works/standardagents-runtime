@@ -1,0 +1,1830 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Eval results — 2026-11-24T22-44-41-527Z-b7e063a</title>
+<style>
+:root { color-scheme: light dark; --line: #8884; --muted: #6b7280; --accent: #2563eb;
+  --ok: #15803d; --bad: #b91c1c; --gap: #a16207; --skip: #6b7280; }
+body { font: 15px/1.5 system-ui, sans-serif; max-width: 60rem; margin: 2rem auto; padding: 0 1rem; }
+h1 { font-size: 1.4rem; margin-bottom: .25rem; }
+h2 { font-size: 1.15rem; margin-top: 2.5rem; border-bottom: 1px solid var(--line); padding-bottom: .25rem; }
+h3 { font-size: 1rem; margin-top: 1.75rem; }
+h4 { font-size: .85rem; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); margin: 1.25rem 0 .25rem; }
+code, pre { font-family: ui-monospace, Consolas, monospace; font-size: .85em; }
+pre { white-space: pre-wrap; background: #8881; padding: .75rem; border-radius: 4px; overflow-x: auto; }
+details > summary { cursor: pointer; }
+.case { border: 1px solid var(--line); border-radius: 6px; margin: .6rem 0; }
+.case > details > summary { padding: .6rem .8rem; list-style: none; }
+.case > details > summary::-webkit-details-marker { display: none; }
+.case > details > summary::before { content: "▸ "; color: var(--muted); }
+.case > details[open] > summary::before { content: "▾ "; }
+.cid { color: var(--accent); font-weight: 600; margin-right: .5rem; }
+.meta { display: block; margin-left: 1.1rem; color: var(--muted); font-size: .8rem; }
+.case .body { padding: 0 .8rem 1rem; border-top: 1px solid var(--line); }
+.req { border-left: 3px solid var(--line); margin: .35rem 0; padding: .2rem .6rem; }
+.req > summary { list-style: none; }
+.req > summary::-webkit-details-marker { display: none; }
+.req > summary::marker { content: ""; }
+.req > summary::before { content: "▸ "; color: var(--muted); }
+.req[open] > summary::before { content: "▾ "; }
+.force { font-size: .75rem; padding: 0 .35rem; border-radius: 3px; border: 1px solid var(--line); }
+.sec { color: var(--muted); }
+.reqs { padding-left: 1.2rem; }
+blockquote { margin: .5rem 0; padding: .3rem .8rem; border-left: 3px solid var(--accent); background: #8881; }
+.src, .obs, .manual { font-size: .85rem; color: var(--muted); }
+.about { color: var(--muted); margin-top: .25rem; }
+.toc ul { padding-left: 1.1rem; }
+.toc .n { color: var(--muted); font-size: .8rem; }
+.banner { border: 1px solid var(--line); border-radius: 6px; padding: .6rem .9rem; font-size: .85rem; color: var(--muted); }
+.banner b { color: inherit; }
+.badge { font-size: .75rem; font-weight: 600; padding: 0 .4rem; border-radius: 3px; border: 1px solid; margin-right: .5rem; white-space: nowrap; }
+.badge.pass { color: var(--ok); border-color: var(--ok); }
+.badge.fail, .badge.error { color: var(--bad); border-color: var(--bad); }
+.badge.not-implemented { color: var(--gap); border-color: var(--gap); }
+.badge.manual { color: var(--skip); border-color: var(--skip); }
+table { border-collapse: collapse; width: 100%; font-size: .85rem; margin: .5rem 0; }
+th, td { text-align: left; padding: .25rem .4rem; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { color: var(--muted); font-weight: 600; }
+tr.bad td { background: color-mix(in srgb, var(--bad) 8%, transparent); }
+tr.bad td:first-child { box-shadow: inset 3px 0 var(--bad); }
+tr.ok td:nth-child(3) { color: var(--muted); }
+.num { text-align: right; font-variant-numeric: tabular-nums; }
+</style>
+</head>
+<body>
+<h1>Eval results — 2026-11-24T22-44-41-527Z-b7e063a</h1>
+<p class="about">Outcome of <code>node evals/run.mjs</code>. Expand a case for its id, the <em>why</em>,
+and every assertion with the value it expected and got. Cases the runtime cannot satisfy yet say so instead of failing.</p>
+<div class="banner">
+  <div>Runner <b>0.2.5</b> · spec <b>0.2.0</b> · model <b>scripted</b> · commit <code>b7e063a</code> · node v24.21.0</div>
+  <div>Started 2026-11-24T22:44:41.527Z · 7643 ms total</div>
+  <div>pass <b>58</b> · fail <b>0</b> · error <b>0</b> · not implemented <b>0</b> · manual <b>7</b></div>
+  <div>Source: <code>evals/results/baseline.json</code></div>
+</div>
+<h2>Suites</h2>
+<table>
+  <thead><tr><th>suite</th><th class="num">pass</th><th class="num">fail</th><th class="num">error</th><th class="num">not impl.</th><th class="num">manual</th></tr></thead>
+  <tbody>
+<tr><td><a href="#01-execution-model">01-execution-model.json</a></td>
+        <td class="num">7</td><td class="num">0</td>
+        <td class="num">0</td><td class="num">0</td>
+        <td class="num">0</td></tr>
+<tr><td><a href="#02-tools-and-stops">02-tools-and-stops.json</a></td>
+        <td class="num">5</td><td class="num">0</td>
+        <td class="num">0</td><td class="num">0</td>
+        <td class="num">0</td></tr>
+<tr><td><a href="#03-queue-and-termination">03-queue-and-termination.json</a></td>
+        <td class="num">3</td><td class="num">0</td>
+        <td class="num">0</td><td class="num">0</td>
+        <td class="num">0</td></tr>
+<tr><td><a href="#04-subagents">04-subagents.json</a></td>
+        <td class="num">17</td><td class="num">0</td>
+        <td class="num">0</td><td class="num">0</td>
+        <td class="num">0</td></tr>
+<tr><td><a href="#05-code-execution">05-code-execution.json</a></td>
+        <td class="num">16</td><td class="num">0</td>
+        <td class="num">0</td><td class="num">0</td>
+        <td class="num">0</td></tr>
+<tr><td><a href="#06-key-value-store">06-key-value-store.json</a></td>
+        <td class="num">4</td><td class="num">0</td>
+        <td class="num">0</td><td class="num">0</td>
+        <td class="num">0</td></tr>
+<tr><td><a href="#08-no-client-required">08-no-client-required.json</a></td>
+        <td class="num">6</td><td class="num">0</td>
+        <td class="num">0</td><td class="num">0</td>
+        <td class="num">1</td></tr>
+<tr><td><a href="#07-client-api-and-streams">07-client-api-and-streams.json</a></td>
+        <td class="num">0</td><td class="num">0</td>
+        <td class="num">0</td><td class="num">0</td>
+        <td class="num">6</td></tr>
+  </tbody>
+</table>
+  <section id="01-execution-model">
+    <h3>01-execution-model.json</h3>
+    <p class="about">Step cycle, context assembly, injection, handler turns, decisions, and per-thread serialization.</p>
+  <article class="case" id="exec-01-step-cycle">
+    <details>
+      <summary><span class="badge pass">pass</span><code class="cid">exec-01-step-cycle</code><span class="why">One prompt turn: tools run in returned order, results persist, a second turn answers, and the assembly hook order is fixed.</span>
+        <span class="meta">65 ms</span>
+      </summary>
+      <div class="body">
+        
+        <h4>Assertions</h4><table><thead><tr><th>surface</th><th>expected</th><th>actual</th></tr></thead>
+<tbody>
+<tr class="ok">
+      <td><code>hooks.order</code></td>
+      <td><code>[&quot;pipeline_after_system&quot;,&quot;pipeline_filter_messages&quot;,&quot;pipeline_prefilter&quot;,&quot;pipeline_after_system&quot;,&quot;pipeline_filter_messages&quot;,&quot;pipeline_prefilter&quot;]</code></td>
+      <td><code>—</code></td>
+    </tr>
+<tr class="ok">
+      <td><code>tools.order</code></td>
+      <td><code>[&quot;record&quot;,&quot;record&quot;]</code></td>
+      <td><code>—</code></td>
+    </tr>
+<tr class="ok">
+      <td><code>tools.args</code></td>
+      <td><code>[{&quot;value&quot;:&quot;a&quot;},{&quot;value&quot;:&quot;b&quot;}]</code></td>
+      <td><code>—</code></td>
+    </tr>
+<tr class="ok">
+      <td><code>tools.status</code></td>
+      <td><code>[&quot;success&quot;,&quot;success&quot;]</code></td>
+      <td><code>—</code></td>
+    </tr>
+<tr class="ok">
+      <td><code>messages.roles</code></td>
+      <td><code>[&quot;user&quot;,&quot;assistant&quot;,&quot;tool&quot;,&quot;tool&quot;,&quot;assistant&quot;]</code></td>
+      <td><code>—</code></td>
+    </tr>
+<tr class="ok">
+      <td><code>model.calls</code></td>
+      <td><code>2</code></td>
+      <td><code>—</code></td>
+    </tr>
+<tr class="ok">
+      <td><code>status</code></td>
+      <td><code>&quot;idle&quot;</code></td>
+      <td><code>—</code></td>
+    </tr>
+<tr class="ok">
+      <td><code>terminated</code></td>
+      <td><code>null</code></td>
+      <td><code>—</code></td>
+    </tr>
+</tbody></table>
+        
+        <p class="src"><a href="index.html#exec-01-step-cycle">why this case exists, with quoted requirements →</a></p>
+      </div>
+    </details>
+  </article>
+  <article class="case" id="exec-02-tool-error-persisted">
+    <details>
+      <summary><span class="badge pass">pass</span><code class="cid">exec-02-tool-error-persisted</code><span class="why">A throwing tool becomes an error tool result; the loop continues with the next call in the same step.</span>
+        <span class="meta">45 ms</span>
+      </summary>
+      <div class="body">
+        
+        <h4>Assertions</h4><table><thead><tr><th>surface</th><th>expected</th><th>actual</th></tr></thead>
+<tbody>
+<tr class="ok">
+      <td><code>tools.order</code></td>
+      <td><code>[&quot;boom&quot;,&quot;record&quot;]</code></td>
+      <td><code>—</code></td>
+    </tr>
+<tr class="ok">
+      <td><code>tools.status</code></td>
+      <td><code>[&quot;error&quot;,&quot;success&quot;]</code></td>
+      <td><code>—</code></td>
+    </tr>
+<tr class="ok">
+      <td><code>messages.contains</code></td>
+      <td><code>{&quot;contains&quot;:[&quot;probe-boom&quot;]}</code></td>
+      <td><code>—</code></td>
+    </tr>
+<tr class="ok">
+      <td><code>messages.roles</code></td>
+      <td><code>[&quot;user&quot;,&quot;assistant&quot;,&quot;tool&quot;,&quot;tool&quot;,&quot;assistant&quot;]</code></td>
+      <td><code>—</code></td>
+    </tr>
+<tr class="ok">
+      <td><code>model.calls</code></td>
+      <td><code>2</code></td>
+      <td><code>—</code></td>
+    </tr>
+<tr class="ok">
+      <td><code>status</code></td>
+      <td><code>&quot;idle&quot;</code></td>
+      <td><code>—</code></td>
+    </tr>
+</tbody></table>
+        
+        <p class="src"><a href="index.html#exec-02-tool-error-persisted">why this case exists, with quoted requirements →</a></p>
+      </div>
+    </details>
+  </article>
+  <article class="case" id="exec-03-injected-after-snapshot">
+    <details>
+      <summary><span class="badge pass">pass</span><code class="cid">exec-03-injected-after-snapshot</code><span class="why">Messages injected during tool execution are absent from the request already being built and present in the next one; silent does not change eligibility.</span>
+        <span class="meta">45 ms</span>
+      </summary>
+      <div class="body">
+        
+        <h4>Assertions</h4><table><thead><tr><th>surface</th><th>expected</th><th>actual</th></tr></thead>
+<tbody>
+<tr class="ok">
+      <td><code>model.requests[0].users</code></td>
+      <td><code>{&quot;notContains&quot;:[&quot;LATE-INJECT&quot;,&quot;SILENT-INJECT&quot;]}</code></td>
+      <td><code>—</code></td>
+    </tr>
+<tr class="ok">
+      <td><code>model.requests[1].users</code></td>
+      <td><code>{&quot;contains&quot;:[&quot;LATE-INJECT&quot;,&quot;SILENT-INJECT&quot;]}</code></td>
+      <td><code>—</code></td>
+    </tr>
+<tr class="ok">
+      <td><code>model.calls</code></td>
+      <td><code>2</code></td>
+      <td><code>—</code></td>
+    </tr>
+<tr class="ok">
+      <td><code>status</code></td>
+      <td><code>&quot;idle&quot;</code></td>
+      <td><code>—</code></td>
+    </tr>
+</tbody></table>
+        
+        <p class="src"><a href="index.html#exec-03-injected-after-snapshot">why this case exists, with quoted requirements →</a></p>
+      </div>
+    </details>
+  </article>
+  <article class="case" id="exec-04-handler-single-turn">
+    <details>
+      <summary><span class="badge pass">pass</span><code class="cid">exec-04-handler-single-turn</code><span class="why">A handler-backed side runs exactly one handler invocation and never calls a model.</span>
+        <span class="meta">16 ms</span>
+      </summary>
+      <div class="body">
+        
+        <h4>Assertions</h4><table><thead><tr><th>surface</th><th>expected</th><th>actual</th></tr></thead>
+<tbody>
+<tr class="ok">
+      <td><code>model.calls</code></td>
+      <td><code>0</code></td>
+      <td><code>—</code></td>
+    </tr>
+<tr class="ok">
+      <td><code>messages.roles</code></td>
+      <td><code>[&quot;user&quot;,&quot;assistant&quot;]</code></td>
+      <td><code>—</code></td>
+    </tr>
+<tr class="ok">
+      <td><code>messages.contains</code></td>
+      <td><code>{&quot;contains&quot;:[&quot;handler:hello&quot;]}</code></td>
+      <td><code>—</code></td>
+    </tr>
+<tr class="ok">
+      <td><code>values</code></td>
+      <td><code>{&quot;handler.turns&quot;:1,&quot;handler.lastContent&quot;:&quot;hello&quot;}</code></td>
+      <td><code>—</code></td>
+    </tr>
+<tr class="ok">
+      <td><code>status</code></td>
+      <td><code>{&quot;oneOf&quot;:[&quot;idle&quot;,&quot;awaiting_human&quot;]}</code></td>
+      <td><code>—</code></td>
+    </tr>
+</tbody></table>
+        
+        <p class="src"><a href="index.html#exec-04-handler-single-turn">why this case exists, with quoted requirements →</a></p>
+      </div>
+    </details>
+  </article>
+  <article class="case" id="exec-05-serialized-flow">
+    <details>
+      <summary><span class="badge pass">pass</span><code class="cid">exec-05-serialized-flow</code><span class="why">A second message sent while a slow tool runs is queued; tool calls never overlap on one thread.</span>
+        <span class="meta">325 ms</span>
+      </summary>
+      <div class="body">
+        
+        <h4>Assertions</h4><table><thead><tr><th>surface</th><th>expected</th><th>actual</th></tr></thead>
+<tbody>
+<tr class="ok">
+      <td><code>tools.maxConcurrent</code></td>
+      <td><code>1</code></td>
+      <td><code>—</code></td>
+    </tr>
+<tr class="ok">
+      <td><code>tools.order</code></td>
+      <td><code>{&quot;contains&quot;:[&quot;slow&quot;,&quot;record&quot;]}</code></td>
+      <td><code>—</code></td>
+    </tr>
+<tr class="ok">
+      <td><code>tools.args</code></td>
+      <td><code>{&quot;contains&quot;:[{&quot;value&quot;:&quot;second&quot;}]}</code></td>
+      <td><code>—</code></td>
+    </tr>
+<tr class="ok">
+      <td><code>model.calls</code></td>
+      <td><code>{&quot;atLeast&quot;:2}</code></td>
+      <td><code>—</code></td>
+    </tr>
+<tr class="ok">
+      <td><code>status</code></td>
+      <td><code>&quot;idle&quot;</code></td>
+      <td><code>—</code></td>
+    </tr>
+</tbody></table>
+        
+        <p class="src"><a href="index.html#exec-05-serialized-flow">why this case exists, with quoted requirements →</a></p>
+      </div>
+    </details>
+  </article>
+  <article class="case" id="exec-06-effect-and-decision">
+    <details>
+      <summary><span class="badge pass">pass</span><code class="cid">exec-06-effect-and-decision</code><span class="why">A scheduled effect fires while the thread is idle; decide() works with state.execution null.</span>
+        <span class="meta">25 ms</span>
+      </summary>
+      <div class="body">
+        
+        <h4>Assertions</h4><table><thead><tr><th>surface</th><th>expected</th><th>actual</th></tr></thead>
+<tbody>
+<tr class="ok">
+      <td><code>effects</code></td>
+      <td><code>{&quot;contains&quot;:[&quot;tick&quot;,&quot;decide_tick&quot;]}</code></td>
+      <td><code>—</code></td>
+    </tr>
+<tr class="ok">
+      <td><code>values</code></td>
+      <td><code>{&quot;decisions.log&quot;:[{&quot;executionIsNull&quot;:true,&quot;probability&quot;:1}]}</code></td>
+      <td><code>—</code></td>
+    </tr>
+<tr class="ok">
+      <td><code>model.calls</code></td>
+      <td><code>0</code></td>
+      <td><code>—</code></td>
+    </tr>
+<tr class="ok">
+      <td><code>status</code></td>
+      <td><code>&quot;idle&quot;</code></td>
+      <td><code>—</code></td>
+    </tr>
+</tbody></table>
+        
+        <p class="src"><a href="index.html#exec-06-effect-and-decision">why this case exists, with quoted requirements →</a></p>
+      </div>
+    </details>
+  </article>
+  <article class="case" id="exec-07-human-turn-parks">
+    <details>
+      <summary><span class="badge pass">pass</span><code class="cid">exec-07-human-turn-parks</code><span class="why">After side A replies, a human-backed thread parks instead of running another side A turn.</span>
+        <span class="meta">34 ms</span>
+      </summary>
+      <div class="body">
+        
+        <h4>Assertions</h4><table><thead><tr><th>surface</th><th>expected</th><th>actual</th></tr></thead>
+<tbody>
+<tr class="ok">
+      <td><code>model.calls</code></td>
+      <td><code>1</code></td>
+      <td><code>—</code></td>
+    </tr>
+<tr class="ok">
+      <td><code>status</code></td>
+      <td><code>{&quot;oneOf&quot;:[&quot;awaiting_human&quot;,&quot;idle&quot;]}</code></td>
+      <td><code>—</code></td>
+    </tr>
+<tr class="ok">
+      <td><code>terminated</code></td>
+      <td><code>null</code></td>
+      <td><code>—</code></td>
+    </tr>
+</tbody></table>
+        
+        <p class="src"><a href="index.html#exec-07-human-turn-parks">why this case exists, with quoted requirements →</a></p>
+      </div>
+    </details>
+  </article>
+  </section>
+  <section id="02-tools-and-stops">
+    <h3>02-tools-and-stops.json</h3>
+    <p class="about">Tool classes and the fixed stop-condition precedence.</p>
+  <article class="case" id="stop-01-stoptool-precedes-response">
+    <details>
+      <summary><span class="badge pass">pass</span><code class="cid">stop-01-stoptool-precedes-response</code><span class="why">stopTool fires at the end of the step, so the model is not called again even though stopOnResponse is also configured.</span>
+        <span class="meta">33 ms</span>
+      </summary>
+      <div class="body">
+        
+        <h4>Assertions</h4><table><thead><tr><th>surface</th><th>expected</th><th>actual</th></tr></thead>
+<tbody>
+<tr class="ok">
+      <td><code>model.calls</code></td>
+      <td><code>1</code></td>
+      <td><code>—</code></td>
+    </tr>
+<tr class="ok">
+      <td><code>tools.order</code></td>
+      <td><code>[&quot;record&quot;,&quot;stop_now&quot;]</code></td>
+      <td><code>—</code></td>
+    </tr>
+<tr class="ok">
+      <td><code>status</code></td>
+      <td><code>&quot;idle&quot;</code></td>
+      <td><code>—</code></td>
+    </tr>
+<tr class="ok">
+      <td><code>terminated</code></td>
+      <td><code>null</code></td>
+      <td><code>—</code></td>
+    </tr>
+</tbody></table>
+        
+        <p class="src"><a href="index.html#stop-01-stoptool-precedes-response">why this case exists, with quoted requirements →</a></p>
+      </div>
+    </details>
+  </article>
+  <article class="case" id="stop-02-stop-on-response">
+    <details>
+      <summary><span class="badge pass">pass</span><code class="cid">stop-02-stop-on-response</code><span class="why">A text-only assistant response ends the session under stopOnResponse.</span>
+        <span class="meta">22 ms</span>
+      </summary>
+      <div class="body">
+        
+        <h4>Assertions</h4><table><thead><tr><th>surface</th><th>expected</th><th>actual</th></tr></thead>
+<tbody>
+<tr class="ok">
+      <td><code>model.calls</code></td>
+      <td><code>1</code></td>
+      <td><code>—</code></td>
+    </tr>
+<tr class="ok">
+      <td><code>status</code></td>
+      <td><code>&quot;idle&quot;</code></td>
+      <td><code>—</code></td>
+    </tr>
+<tr class="ok">
+      <td><code>terminated</code></td>
+      <td><code>null</code></td>
+      <td><code>—</code></td>
+    </tr>
+</tbody></table>
+        
+        <p class="src"><a href="index.html#stop-02-stop-on-response">why this case exists, with quoted requirements →</a></p>
+      </div>
+    </details>
+  </article>
+  <article class="case" id="stop-03-max-steps">
+    <details>
+      <summary><span class="badge pass">pass</span><code class="cid">stop-03-max-steps</code><span class="why">Without a response stop, replaying tool calls stop at maxSteps; the thread is not terminated.</span>
+        <span class="meta">45 ms</span>
+      </summary>
+      <div class="body">
+        
+        <h4>Assertions</h4><table><thead><tr><th>surface</th><th>expected</th><th>actual</th></tr></thead>
+<tbody>
+<tr class="ok">
+      <td><code>model.calls</code></td>
+      <td><code>2</code></td>
+      <td><code>—</code></td>
+    </tr>
+<tr class="ok">
+      <td><code>tools.order</code></td>
+      <td><code>[&quot;record&quot;,&quot;record&quot;]</code></td>
+      <td><code>—</code></td>
+    </tr>
+<tr class="ok">
+      <td><code>status</code></td>
+      <td><code>&quot;idle&quot;</code></td>
+      <td><code>—</code></td>
+    </tr>
+<tr class="ok">
+      <td><code>terminated</code></td>
+      <td><code>null</code></td>
+      <td><code>—</code></td>
+    </tr>
+</tbody></table>
+        
+        <p class="src"><a href="index.html#stop-03-max-steps">why this case exists, with quoted requirements →</a></p>
+      </div>
+    </details>
+  </article>
+  <article class="case" id="stop-05-session-stop-tool">
+    <details>
+      <summary><span class="badge pass">pass</span><code class="cid">stop-05-session-stop-tool</code><span class="why">The bound sessionStop tool takes precedence over every other stop and ends the session without terminating the thread.</span>
+        <span class="meta">26 ms</span>
+      </summary>
+      <div class="body">
+        
+        <h4>Assertions</h4><table><thead><tr><th>surface</th><th>expected</th><th>actual</th></tr></thead>
+<tbody>
+<tr class="ok">
+      <td><code>model.calls</code></td>
+      <td><code>1</code></td>
+      <td><code>—</code></td>
+    </tr>
+<tr class="ok">
+      <td><code>status</code></td>
+      <td><code>&quot;idle&quot;</code></td>
+      <td><code>—</code></td>
+    </tr>
+<tr class="ok">
+      <td><code>terminated</code></td>
+      <td><code>null</code></td>
+      <td><code>—</code></td>
+    </tr>
+</tbody></table>
+        
+        <p class="src"><a href="index.html#stop-05-session-stop-tool">why this case exists, with quoted requirements →</a></p>
+      </div>
+    </details>
+  </article>
+  <article class="case" id="tools-01-tool-classes">
+    <details>
+      <summary><span class="badge pass">pass</span><code class="cid">tools-01-tool-classes</code><span class="why">One tool list carries function tools, a prompt tool, an agent handoff tool, and lifecycle tools; the hidden relationship appears nowhere in it.</span>
+        <span class="meta">38 ms</span>
+      </summary>
+      <div class="body">
+        
+        <h4>Assertions</h4><table><thead><tr><th>surface</th><th>expected</th><th>actual</th></tr></thead>
+<tbody>
+<tr class="ok">
+      <td><code>model.requests[0].tools</code></td>
+      <td><code>{&quot;contains&quot;:[&quot;record&quot;,&quot;summarize&quot;,&quot;handler_probe&quot;,&quot;subagents&quot;,&quot;subagent_create&quot;,&quot;subagent_message&quot;]}</code></td>
+      <td><code>—</code></td>
+    </tr>
+<tr class="ok">
+      <td><code>model.requests[0].toolDetail</code></td>
+      <td><code>{&quot;notContains&quot;:[&quot;hidden_leaf&quot;]}</code></td>
+      <td><code>—</code></td>
+    </tr>
+<tr class="ok">
+      <td><code>model.calls</code></td>
+      <td><code>1</code></td>
+      <td><code>—</code></td>
+    </tr>
+<tr class="ok">
+      <td><code>status</code></td>
+      <td><code>&quot;idle&quot;</code></td>
+      <td><code>—</code></td>
+    </tr>
+</tbody></table>
+        
+        <p class="src"><a href="index.html#tools-01-tool-classes">why this case exists, with quoted requirements →</a></p>
+      </div>
+    </details>
+  </article>
+  </section>
+  <section id="03-queue-and-termination">
+    <h3>03-queue-and-termination.json</h3>
+    <p class="about">Queue triggers, FIFO delivery, and soft termination.</p>
+  <article class="case" id="queue-01-fifo">
+    <details>
+      <summary><span class="badge pass">pass</span><code class="cid">queue-01-fifo</code><span class="why">Messages queued while a tool runs are injected before the next model call in FIFO order.</span>
+        <span class="meta">973 ms</span>
+      </summary>
+      <div class="body">
+        
+        <h4>Assertions</h4><table><thead><tr><th>surface</th><th>expected</th><th>actual</th></tr></thead>
+<tbody>
+<tr class="ok">
+      <td><code>messages.contents</code></td>
+      <td><code>{&quot;contains&quot;:[&quot;START&quot;,&quot;FIRST&quot;,&quot;SECOND&quot;]}</code></td>
+      <td><code>—</code></td>
+    </tr>
+<tr class="ok">
+      <td><code>tools.order</code></td>
+      <td><code>{&quot;contains&quot;:[&quot;slow&quot;]}</code></td>
+      <td><code>—</code></td>
+    </tr>
+<tr class="ok">
+      <td><code>model.calls</code></td>
+      <td><code>{&quot;atLeast&quot;:2}</code></td>
+      <td><code>—</code></td>
+    </tr>
+<tr class="ok">
+      <td><code>status</code></td>
+      <td><code>&quot;idle&quot;</code></td>
+      <td><code>—</code></td>
+    </tr>
+</tbody></table>
+        
+        <p class="src"><a href="index.html#queue-01-fifo">why this case exists, with quoted requirements →</a></p>
+      </div>
+    </details>
+  </article>
+  <article class="case" id="queue-02-queued-tool">
+    <details>
+      <summary><span class="badge pass">pass</span><code class="cid">queue-02-queued-tool</code><span class="why">Queued tool calls run before the next model call and keep their order.</span>
+        <span class="meta">1535 ms</span>
+      </summary>
+      <div class="body">
+        
+        <h4>Assertions</h4><table><thead><tr><th>surface</th><th>expected</th><th>actual</th></tr></thead>
+<tbody>
+<tr class="ok">
+      <td><code>tools.order</code></td>
+      <td><code>{&quot;contains&quot;:[&quot;slow&quot;,&quot;record&quot;,&quot;record&quot;]}</code></td>
+      <td><code>—</code></td>
+    </tr>
+<tr class="ok">
+      <td><code>tools.args</code></td>
+      <td><code>{&quot;contains&quot;:[{&quot;value&quot;:&quot;QUEUED-TOOL&quot;},{&quot;value&quot;:&quot;QUEUED-TOOL-2&quot;}]}</code></td>
+      <td><code>—</code></td>
+    </tr>
+<tr class="ok">
+      <td><code>status</code></td>
+      <td><code>&quot;idle&quot;</code></td>
+      <td><code>—</code></td>
+    </tr>
+</tbody></table>
+        
+        <p class="src"><a href="index.html#queue-02-queued-tool">why this case exists, with quoted requirements →</a></p>
+      </div>
+    </details>
+  </article>
+  <article class="case" id="term-01-soft-terminate">
+    <details>
+      <summary><span class="badge pass">pass</span><code class="cid">term-01-soft-terminate</code><span class="why">terminate() stamps the thread, aborts in-flight work, and rejects later sends; nothing calls execute again.</span>
+        <span class="meta">556 ms</span>
+      </summary>
+      <div class="body">
+        
+        <h4>Assertions</h4><table><thead><tr><th>surface</th><th>expected</th><th>actual</th></tr></thead>
+<tbody>
+<tr class="ok">
+      <td><code>terminated</code></td>
+      <td><code>{&quot;notEquals&quot;:null}</code></td>
+      <td><code>—</code></td>
+    </tr>
+<tr class="ok">
+      <td><code>rejected</code></td>
+      <td><code>true</code></td>
+      <td><code>—</code></td>
+    </tr>
+<tr class="ok">
+      <td><code>model.calls</code></td>
+      <td><code>1</code></td>
+      <td><code>—</code></td>
+    </tr>
+</tbody></table>
+        
+        <p class="src"><a href="index.html#term-01-soft-terminate">why this case exists, with quoted requirements →</a></p>
+      </div>
+    </details>
+  </article>
+  </section>
+  <section id="04-subagents">
+    <h3>04-subagents.json</h3>
+    <p class="about">Parent/child linkage, lifecycle tooling, relationship flags, payload mapping, attachments, reporting, and parent-hook composition.</p>
+  <article class="case" id="sub-01-immediate-at-creation">
+    <details>
+      <summary><span class="badge pass">pass</span><code class="cid">sub-01-immediate-at-creation</code><span class="why">immediate relationships spawn at thread creation, before any turn, including the immediate-object form.</span>
+        <span class="meta">31 ms</span>
+      </summary>
+      <div class="body">
+        
+        <h4>Assertions</h4><table><thead><tr><th>surface</th><th>expected</th><th>actual</th></tr></thead>
+<tbody>
+<tr class="ok">
+      <td><code>children</code></td>
+      <td><code>{&quot;length&quot;:2}</code></td>
+      <td><code>—</code></td>
+    </tr>
+<tr class="ok">
+      <td><code>children</code></td>
+      <td><code>{&quot;contains&quot;:[{&quot;relationship&quot;:&quot;immediate_leaf&quot;,&quot;name&quot;:&quot;leaf&quot;},{&quot;relationship&quot;:&quot;env_leaf&quot;,&quot;name&quot;:&quot;leaf&quot;}]}</code></td>
+      <td><code>—</code></td>
+    </tr>
+<tr class="ok">
+      <td><code>model.calls</code></td>
+      <td><code>0</code></td>
+      <td><code>—</code></td>
+    </tr>
+<tr class="ok">
+      <td><code>status</code></td>
+      <td><code>&quot;idle&quot;</code></td>
+      <td><code>—</code></td>
+    </tr>
+</tbody></table>
+        
+        <p class="src"><a href="index.html#sub-01-immediate-at-creation">why this case exists, with quoted requirements →</a></p>
+      </div>
+    </details>
+  </article>
+  <article class="case" id="sub-02-create-and-registry">
+    <details>
+      <summary><span class="badge pass">pass</span><code class="cid">sub-02-create-and-registry</code><span class="why">subagent_create returns a child with parent linkage and a registry entry keyed by the relationship name.</span>
+        <span class="meta">93 ms</span>
+      </summary>
+      <div class="body">
+        
+        <h4>Assertions</h4><table><thead><tr><th>surface</th><th>expected</th><th>actual</th></tr></thead>
+<tbody>
+<tr class="ok">
+      <td><code>children</code></td>
+      <td><code>{&quot;contains&quot;:[{&quot;relationship&quot;:&quot;worker&quot;,&quot;name&quot;:&quot;worker&quot;}]}</code></td>
+      <td><code>—</code></td>
+    </tr>
+<tr class="ok">
+      <td><code>tools.status</code></td>
+      <td><code>[&quot;success&quot;]</code></td>
+      <td><code>—</code></td>
+    </tr>
+<tr class="ok">
+      <td><code>messages.contains</code></td>
+      <td><code>{&quot;contains&quot;:[&quot;Started w1&quot;]}</code></td>
+      <td><code>—</code></td>
+    </tr>
+<tr class="ok">
+      <td><code>status</code></td>
+      <td><code>&quot;idle&quot;</code></td>
+      <td><code>—</code></td>
+    </tr>
+</tbody></table>
+        
+        <p class="src"><a href="index.html#sub-02-create-and-registry">why this case exists, with quoted requirements →</a></p>
+      </div>
+    </details>
+  </article>
+  <article class="case" id="sub-03-create-name-required">
+    <details>
+      <summary><span class="badge pass">pass</span><code class="cid">sub-03-create-name-required</code><span class="why">Creation without a non-empty name fails as a tool error, not a crash.</span>
+        <span class="meta">60 ms</span>
+      </summary>
+      <div class="body">
+        
+        <h4>Assertions</h4><table><thead><tr><th>surface</th><th>expected</th><th>actual</th></tr></thead>
+<tbody>
+<tr class="ok">
+      <td><code>tools.status</code></td>
+      <td><code>[&quot;error&quot;]</code></td>
+      <td><code>—</code></td>
+    </tr>
+<tr class="ok">
+      <td><code>tools.results[0]</code></td>
+      <td><code>{&quot;contains&quot;:&quot;name&quot;}</code></td>
+      <td><code>—</code></td>
+    </tr>
+<tr class="ok">
+      <td><code>status</code></td>
+      <td><code>&quot;idle&quot;</code></td>
+      <td><code>—</code></td>
+    </tr>
+</tbody></table>
+        
+        <p class="src"><a href="index.html#sub-03-create-name-required">why this case exists, with quoted requirements →</a></p>
+      </div>
+    </details>
+  </article>
+  <article class="case" id="sub-04-max-instances">
+    <details>
+      <summary><span class="badge pass">pass</span><code class="cid">sub-04-max-instances</code><span class="why">A third instance beyond maxInstances returns an actionable tool error.</span>
+        <span class="meta">104 ms</span>
+      </summary>
+      <div class="body">
+        
+        <h4>Assertions</h4><table><thead><tr><th>surface</th><th>expected</th><th>actual</th></tr></thead>
+<tbody>
+<tr class="ok">
+      <td><code>tools.status</code></td>
+      <td><code>[&quot;success&quot;,&quot;success&quot;,&quot;error&quot;]</code></td>
+      <td><code>—</code></td>
+    </tr>
+<tr class="ok">
+      <td><code>tools.results[2]</code></td>
+      <td><code>{&quot;contains&quot;:&quot;maxInstances&quot;}</code></td>
+      <td><code>—</code></td>
+    </tr>
+<tr class="ok">
+      <td><code>children</code></td>
+      <td><code>{&quot;length&quot;:2}</code></td>
+      <td><code>—</code></td>
+    </tr>
+</tbody></table>
+        
+        <p class="src"><a href="index.html#sub-04-max-instances">why this case exists, with quoted requirements →</a></p>
+      </div>
+    </details>
+  </article>
+  <article class="case" id="sub-05-arguments-interpolated">
+    <details>
+      <summary><span class="badge pass">pass</span><code class="cid">sub-05-arguments-interpolated</code><span class="why">Initial arguments reach the child prompt as top-level interpolation variables.</span>
+        <span class="meta">99 ms</span>
+      </summary>
+      <div class="body">
+        
+        <h4>Assertions</h4><table><thead><tr><th>surface</th><th>expected</th><th>actual</th></tr></thead>
+<tbody>
+<tr class="ok">
+      <td><code>values.system.current · child:worker</code></td>
+      <td><code>{&quot;contains&quot;:[&quot;do-one&quot;]}</code></td>
+      <td><code>—</code></td>
+    </tr>
+<tr class="ok">
+      <td><code>status</code></td>
+      <td><code>&quot;idle&quot;</code></td>
+      <td><code>—</code></td>
+    </tr>
+</tbody></table>
+        
+        <p class="src"><a href="index.html#sub-05-arguments-interpolated">why this case exists, with quoted requirements →</a></p>
+      </div>
+    </details>
+  </article>
+  <article class="case" id="sub-06-arguments-required">
+    <details>
+      <summary><span class="badge pass">pass</span><code class="cid">sub-06-arguments-required</code><span class="why">Arguments missing a side A required field are rejected as a tool error.</span>
+        <span class="meta">59 ms</span>
+      </summary>
+      <div class="body">
+        
+        <h4>Assertions</h4><table><thead><tr><th>surface</th><th>expected</th><th>actual</th></tr></thead>
+<tbody>
+<tr class="ok">
+      <td><code>tools.status</code></td>
+      <td><code>[&quot;error&quot;]</code></td>
+      <td><code>—</code></td>
+    </tr>
+<tr class="ok">
+      <td><code>tools.results[0]</code></td>
+      <td><code>{&quot;contains&quot;:&quot;task&quot;}</code></td>
+      <td><code>—</code></td>
+    </tr>
+</tbody></table>
+        
+        <p class="src"><a href="index.html#sub-06-arguments-required">why this case exists, with quoted requirements →</a></p>
+      </div>
+    </details>
+  </article>
+  <article class="case" id="sub-07-attachments-parent-to-child">
+    <details>
+      <summary><span class="badge pass">pass</span><code class="cid">sub-07-attachments-parent-to-child</code><span class="why">A referenced attachment is copied into the child filesystem and is readable there.</span>
+        <span class="meta">119 ms</span>
+      </summary>
+      <div class="body">
+        
+        <h4>Assertions</h4><table><thead><tr><th>surface</th><th>expected</th><th>actual</th></tr></thead>
+<tbody>
+<tr class="ok">
+      <td><code>tools.status</code></td>
+      <td><code>[&quot;success&quot;,&quot;success&quot;]</code></td>
+      <td><code>—</code></td>
+    </tr>
+<tr class="ok">
+      <td><code>tools.results[0] · child:worker</code></td>
+      <td><code>{&quot;contains&quot;:&quot;\&quot;exists\&quot;:true&quot;}</code></td>
+      <td><code>—</code></td>
+    </tr>
+</tbody></table>
+        
+        <p class="src"><a href="index.html#sub-07-attachments-parent-to-child">why this case exists, with quoted requirements →</a></p>
+      </div>
+    </details>
+  </article>
+  <article class="case" id="sub-07b-attachments-without-initial-message">
+    <details>
+      <summary><span class="badge pass">pass</span><code class="cid">sub-07b-attachments-without-initial-message</code><span class="why">A blocking relationship that maps no message property still copies the declared attachment: the JSON arguments it queues carry the child-local path (factory/bugs/attachment-dropped-when-initial-message-empty.md).</span>
+        <span class="meta">103 ms</span>
+      </summary>
+      <div class="body">
+        
+        <h4>Assertions</h4><table><thead><tr><th>surface</th><th>expected</th><th>actual</th></tr></thead>
+<tbody>
+<tr class="ok">
+      <td><code>messages.contents[0] · child:blocking_worker</code></td>
+      <td><code>{&quot;contains&quot;:&quot;shared.txt&quot;}</code></td>
+      <td><code>—</code></td>
+    </tr>
+<tr class="ok">
+      <td><code>messages.attachments · child:blocking_worker</code></td>
+      <td><code>{&quot;length&quot;:1}</code></td>
+      <td><code>—</code></td>
+    </tr>
+<tr class="ok">
+      <td><code>messages.attachments[0].path · child:blocking_worker</code></td>
+      <td><code>&quot;/shared.txt&quot;</code></td>
+      <td><code>—</code></td>
+    </tr>
+</tbody></table>
+        
+        <p class="src"><a href="index.html#sub-07b-attachments-without-initial-message">why this case exists, with quoted requirements →</a></p>
+      </div>
+    </details>
+  </article>
+  <article class="case" id="sub-07c-later-message-attachments">
+    <details>
+      <summary><span class="badge pass">pass</span><code class="cid">sub-07c-later-message-attachments</code><span class="why">subagent_message names parent files, the child gets them copied in and reads one (factory/bugs/attachment-dropped-when-initial-message-empty.md).</span>
+        <span class="meta">182 ms</span>
+      </summary>
+      <div class="body">
+        
+        <h4>Assertions</h4><table><thead><tr><th>surface</th><th>expected</th><th>actual</th></tr></thead>
+<tbody>
+<tr class="ok">
+      <td><code>messages.attachments · child:quiet_worker</code></td>
+      <td><code>{&quot;length&quot;:1}</code></td>
+      <td><code>—</code></td>
+    </tr>
+<tr class="ok">
+      <td><code>tools.results[0] · child:quiet_worker</code></td>
+      <td><code>{&quot;contains&quot;:&quot;\&quot;exists\&quot;:true&quot;}</code></td>
+      <td><code>—</code></td>
+    </tr>
+</tbody></table>
+        
+        <p class="src"><a href="index.html#sub-07c-later-message-attachments">why this case exists, with quoted requirements →</a></p>
+      </div>
+    </details>
+  </article>
+  <article class="case" id="sub-08-child-to-parent-implicit">
+    <details>
+      <summary><span class="badge pass">pass</span><code class="cid">sub-08-child-to-parent-implicit</code><span class="why">Under the default implicit mode a child sessionStop becomes a parent queued message carrying the result text.</span>
+        <span class="meta">123 ms</span>
+      </summary>
+      <div class="body">
+        
+        <h4>Assertions</h4><table><thead><tr><th>surface</th><th>expected</th><th>actual</th></tr></thead>
+<tbody>
+<tr class="ok">
+      <td><code>messages.contains</code></td>
+      <td><code>{&quot;contains&quot;:[&quot;worker-report&quot;]}</code></td>
+      <td><code>—</code></td>
+    </tr>
+<tr class="ok">
+      <td><code>children</code></td>
+      <td><code>{&quot;contains&quot;:[{&quot;relationship&quot;:&quot;worker&quot;}]}</code></td>
+      <td><code>—</code></td>
+    </tr>
+</tbody></table>
+        
+        <p class="src"><a href="index.html#sub-08-child-to-parent-implicit">why this case exists, with quoted requirements →</a></p>
+      </div>
+    </details>
+  </article>
+  <article class="case" id="sub-09-explicit-no-wake">
+    <details>
+      <summary><span class="badge pass">pass</span><code class="cid">sub-09-explicit-no-wake</code><span class="why">An explicit child does not auto-queue completion and does not wake the parent: the parent history stays the four messages of its own turn, since a delivered report would add a user message and a parent turn after it.</span>
+        <span class="meta">89 ms</span>
+      </summary>
+      <div class="body">
+        
+        <h4>Assertions</h4><table><thead><tr><th>surface</th><th>expected</th><th>actual</th></tr></thead>
+<tbody>
+<tr class="ok">
+      <td><code>messages.roles</code></td>
+      <td><code>[&quot;user&quot;,&quot;assistant&quot;,&quot;tool&quot;,&quot;assistant&quot;]</code></td>
+      <td><code>—</code></td>
+    </tr>
+<tr class="ok">
+      <td><code>children</code></td>
+      <td><code>{&quot;contains&quot;:[{&quot;relationship&quot;:&quot;quiet_worker&quot;}]}</code></td>
+      <td><code>—</code></td>
+    </tr>
+<tr class="ok">
+      <td><code>status</code></td>
+      <td><code>&quot;idle&quot;</code></td>
+      <td><code>—</code></td>
+    </tr>
+</tbody></table>
+        
+        <p class="src"><a href="index.html#sub-09-explicit-no-wake">why this case exists, with quoted requirements →</a></p>
+      </div>
+    </details>
+  </article>
+  <article class="case" id="sub-10-status-without-termination">
+    <details>
+      <summary><span class="badge pass">pass</span><code class="cid">sub-10-status-without-termination</code><span class="why">setStatus updates the parent registry without terminating the child; the child keeps running and later runtime status writes may overwrite the custom text.</span>
+        <span class="meta">146 ms</span>
+      </summary>
+      <div class="body">
+        
+        <h4>Assertions</h4><table><thead><tr><th>surface</th><th>expected</th><th>actual</th></tr></thead>
+<tbody>
+<tr class="ok">
+      <td><code>children</code></td>
+      <td><code>{&quot;contains&quot;:[{&quot;relationship&quot;:&quot;worker&quot;}]}</code></td>
+      <td><code>—</code></td>
+    </tr>
+<tr class="ok">
+      <td><code>tools.status · child:worker</code></td>
+      <td><code>[&quot;success&quot;]</code></td>
+      <td><code>—</code></td>
+    </tr>
+<tr class="ok">
+      <td><code>terminated · child:worker</code></td>
+      <td><code>null</code></td>
+      <td><code>—</code></td>
+    </tr>
+</tbody></table>
+        
+        <p class="src"><a href="index.html#sub-10-status-without-termination">why this case exists, with quoted requirements →</a></p>
+      </div>
+    </details>
+  </article>
+  <article class="case" id="sub-11-parent-hook-order">
+    <details>
+      <summary><span class="badge pass">pass</span><code class="cid">sub-11-parent-hook-order</code><span class="why">Within one hook position: child before_parent hooks, then the parent set, then child after_parent hooks.</span>
+        <span class="meta">47 ms</span>
+      </summary>
+      <div class="body">
+        
+        <h4>Assertions</h4><table><thead><tr><th>surface</th><th>expected</th><th>actual</th></tr></thead>
+<tbody>
+<tr class="ok">
+      <td><code>hooks.order</code></td>
+      <td><code>[&quot;parent_probe_before&quot;,&quot;pipeline_after_system&quot;,&quot;parent_own&quot;,&quot;parent_probe_after&quot;]</code></td>
+      <td><code>—</code></td>
+    </tr>
+<tr class="ok">
+      <td><code>model.calls</code></td>
+      <td><code>1</code></td>
+      <td><code>—</code></td>
+    </tr>
+</tbody></table>
+        
+        <p class="src"><a href="index.html#sub-11-parent-hook-order">why this case exists, with quoted requirements →</a></p>
+      </div>
+    </details>
+  </article>
+  <article class="case" id="sub-12-scoped-env-runtime-only">
+    <details>
+      <summary><span class="badge pass">pass</span><code class="cid">sub-12-scoped-env-runtime-only</code><span class="why">scopedEnv reaches the child as runtime env but never appears in the child's prompt text.</span>
+        <span class="meta">100 ms</span>
+      </summary>
+      <div class="body">
+        
+        <h4>Assertions</h4><table><thead><tr><th>surface</th><th>expected</th><th>actual</th></tr></thead>
+<tbody>
+<tr class="ok">
+      <td><code>values.system.current · child:env_leaf</code></td>
+      <td><code>{&quot;notContains&quot;:[&quot;s3cret-not-for-model&quot;]}</code></td>
+      <td><code>—</code></td>
+    </tr>
+<tr class="ok">
+      <td><code>values.state.env · child:env_leaf</code></td>
+      <td><code>{&quot;LEAF_SECRET&quot;:&quot;s3cret-not-for-model&quot;}</code></td>
+      <td><code>—</code></td>
+    </tr>
+</tbody></table>
+        
+        <p class="src"><a href="index.html#sub-12-scoped-env-runtime-only">why this case exists, with quoted requirements →</a></p>
+      </div>
+    </details>
+  </article>
+  <article class="case" id="sub-13-immediate-recursive">
+    <details>
+      <summary><span class="badge pass">pass</span><code class="cid">sub-13-immediate-recursive</code><span class="why">An immediate child that itself declares an immediate relationship spawns its own child on creation.</span>
+        <span class="meta">113 ms</span>
+      </summary>
+      <div class="body">
+        
+        <h4>Assertions</h4><table><thead><tr><th>surface</th><th>expected</th><th>actual</th></tr></thead>
+<tbody>
+<tr class="ok">
+      <td><code>tools.results[0] · child:worker</code></td>
+      <td><code>{&quot;contains&quot;:&quot;worker_leaf&quot;}</code></td>
+      <td><code>—</code></td>
+    </tr>
+</tbody></table>
+        
+        <p class="src"><a href="index.html#sub-13-immediate-recursive">why this case exists, with quoted requirements →</a></p>
+      </div>
+    </details>
+  </article>
+  <article class="case" id="sub-14-escalate-without-parent">
+    <details>
+      <summary><span class="badge pass">pass</span><code class="cid">sub-14-escalate-without-parent</code><span class="why">notifyParent and setStatus on a parentless thread are silent no-ops.</span>
+        <span class="meta">41 ms</span>
+      </summary>
+      <div class="body">
+        
+        <h4>Assertions</h4><table><thead><tr><th>surface</th><th>expected</th><th>actual</th></tr></thead>
+<tbody>
+<tr class="ok">
+      <td><code>tools.status</code></td>
+      <td><code>[&quot;success&quot;]</code></td>
+      <td><code>—</code></td>
+    </tr>
+<tr class="ok">
+      <td><code>status</code></td>
+      <td><code>&quot;idle&quot;</code></td>
+      <td><code>—</code></td>
+    </tr>
+<tr class="ok">
+      <td><code>terminated</code></td>
+      <td><code>null</code></td>
+      <td><code>—</code></td>
+    </tr>
+</tbody></table>
+        
+        <p class="src"><a href="index.html#sub-14-escalate-without-parent">why this case exists, with quoted requirements →</a></p>
+      </div>
+    </details>
+  </article>
+  <article class="case" id="sub-15-optional-flag-on">
+    <details>
+      <summary><span class="badge pass">pass</span><code class="cid">sub-15-optional-flag-on</code><span class="why">The optional relationship activates when its env flag resolves to yes.</span>
+        <span class="meta">38 ms</span>
+      </summary>
+      <div class="body">
+        
+        <h4>Assertions</h4><table><thead><tr><th>surface</th><th>expected</th><th>actual</th></tr></thead>
+<tbody>
+<tr class="ok">
+      <td><code>model.requests[0].toolDetail</code></td>
+      <td><code>{&quot;contains&quot;:[&quot;optional_leaf&quot;]}</code></td>
+      <td><code>—</code></td>
+    </tr>
+</tbody></table>
+        
+        <p class="src"><a href="index.html#sub-15-optional-flag-on">why this case exists, with quoted requirements →</a></p>
+      </div>
+    </details>
+  </article>
+  </section>
+  <section id="05-code-execution">
+    <h3>05-code-execution.json</h3>
+    <p class="about">ThreadState.runCode conformance: isolation, modules, marshaling, limits, export resolution, erasure, event loop, and the section 14.9 checklist.</p>
+  <article class="case" id="code-01-typescript-default-export">
+    <details>
+      <summary><span class="badge pass">pass</span><code class="cid">code-01-typescript-default-export</code><span class="why">TypeScript is accepted by default, types are erased, and the default export value becomes the result.</span>
+        <span class="meta">57 ms</span>
+      </summary>
+      <div class="body">
+        
+        <h4>Assertions</h4><table><thead><tr><th>surface</th><th>expected</th><th>actual</th></tr></thead>
+<tbody>
+<tr class="ok">
+      <td><code>code[0]</code></td>
+      <td><code>{&quot;status&quot;:&quot;success&quot;,&quot;result&quot;:3}</code></td>
+      <td><code>—</code></td>
+    </tr>
+<tr class="ok">
+      <td><code>status</code></td>
+      <td><code>&quot;idle&quot;</code></td>
+      <td><code>—</code></td>
+    </tr>
+</tbody></table>
+        
+        <p class="src"><a href="index.html#code-01-typescript-default-export">why this case exists, with quoted requirements →</a></p>
+      </div>
+    </details>
+  </article>
+  <article class="case" id="code-02-export-resolution">
+    <details>
+      <summary><span class="badge pass">pass</span><code class="cid">code-02-export-resolution</code><span class="why">The selected export is called with args and awaited; missing, non-function with args, and throwing exports settle with their fixed statuses.</span>
+        <span class="meta">170 ms</span>
+      </summary>
+      <div class="body">
+        
+        <h4>Assertions</h4><table><thead><tr><th>surface</th><th>expected</th><th>actual</th></tr></thead>
+<tbody>
+<tr class="ok">
+      <td><code>code[0]</code></td>
+      <td><code>{&quot;status&quot;:&quot;success&quot;,&quot;result&quot;:42}</code></td>
+      <td><code>—</code></td>
+    </tr>
+<tr class="ok">
+      <td><code>code[1]</code></td>
+      <td><code>{&quot;status&quot;:&quot;link_error&quot;}</code></td>
+      <td><code>—</code></td>
+    </tr>
+<tr class="ok">
+      <td><code>code[2]</code></td>
+      <td><code>{&quot;status&quot;:&quot;error&quot;}</code></td>
+      <td><code>—</code></td>
+    </tr>
+<tr class="ok">
+      <td><code>code[3]</code></td>
+      <td><code>{&quot;status&quot;:&quot;error&quot;}</code></td>
+      <td><code>—</code></td>
+    </tr>
+<tr class="ok">
+      <td><code>code[3].error.message</code></td>
+      <td><code>{&quot;contains&quot;:&quot;probe-throw&quot;}</code></td>
+      <td><code>—</code></td>
+    </tr>
+</tbody></table>
+        
+        <p class="src"><a href="index.html#code-02-export-resolution">why this case exists, with quoted requirements →</a></p>
+      </div>
+    </details>
+  </article>
+  <article class="case" id="code-03-module-resolution">
+    <details>
+      <summary><span class="badge pass">pass</span><code class="cid">code-03-module-resolution</code><span class="why">Bare specifiers come only from imports, relatives only from modules, and URL or unknown specifiers fail linkage.</span>
+        <span class="meta">164 ms</span>
+      </summary>
+      <div class="body">
+        
+        <h4>Assertions</h4><table><thead><tr><th>surface</th><th>expected</th><th>actual</th></tr></thead>
+<tbody>
+<tr class="ok">
+      <td><code>code[0]</code></td>
+      <td><code>{&quot;status&quot;:&quot;success&quot;,&quot;result&quot;:7}</code></td>
+      <td><code>—</code></td>
+    </tr>
+<tr class="ok">
+      <td><code>code[1]</code></td>
+      <td><code>{&quot;status&quot;:&quot;success&quot;,&quot;result&quot;:3}</code></td>
+      <td><code>—</code></td>
+    </tr>
+<tr class="ok">
+      <td><code>code[2]</code></td>
+      <td><code>{&quot;status&quot;:&quot;link_error&quot;}</code></td>
+      <td><code>—</code></td>
+    </tr>
+<tr class="ok">
+      <td><code>code[3]</code></td>
+      <td><code>{&quot;status&quot;:&quot;link_error&quot;}</code></td>
+      <td><code>—</code></td>
+    </tr>
+</tbody></table>
+        
+        <p class="src"><a href="index.html#code-03-module-resolution">why this case exists, with quoted requirements →</a></p>
+      </div>
+    </details>
+  </article>
+  <article class="case" id="code-04-globals-and-isolation">
+    <details>
+      <summary><span class="badge pass">pass</span><code class="cid">code-04-globals-and-isolation</code><span class="why">Globals are module-scoped, globalThis holds only intrinsics, and mutations do not survive into the next call.</span>
+        <span class="meta">120 ms</span>
+      </summary>
+      <div class="body">
+        
+        <h4>Assertions</h4><table><thead><tr><th>surface</th><th>expected</th><th>actual</th></tr></thead>
+<tbody>
+<tr class="ok">
+      <td><code>code[0]</code></td>
+      <td><code>{&quot;status&quot;:&quot;success&quot;,&quot;result&quot;:{&quot;onGlobal&quot;:&quot;undefined&quot;,&quot;value&quot;:5,&quot;keys&quot;:[]}}</code></td>
+      <td><code>—</code></td>
+    </tr>
+<tr class="ok">
+      <td><code>code[1]</code></td>
+      <td><code>{&quot;status&quot;:&quot;success&quot;,&quot;result&quot;:&quot;mutated&quot;}</code></td>
+      <td><code>—</code></td>
+    </tr>
+<tr class="ok">
+      <td><code>code[2]</code></td>
+      <td><code>{&quot;status&quot;:&quot;success&quot;,&quot;result&quot;:{&quot;leak&quot;:&quot;undefined&quot;,&quot;hacked&quot;:null}}</code></td>
+      <td><code>—</code></td>
+    </tr>
+</tbody></table>
+        
+        <p class="src"><a href="index.html#code-04-globals-and-isolation">why this case exists, with quoted requirements →</a></p>
+      </div>
+    </details>
+  </article>
+  <article class="case" id="code-05-forbidden-apis">
+    <details>
+      <summary><span class="badge pass">pass</span><code class="cid">code-05-forbidden-apis</code><span class="why">eval, new Function, SharedArrayBuffer, and URL imports are all rejected rather than executed.</span>
+        <span class="meta">165 ms</span>
+      </summary>
+      <div class="body">
+        
+        <h4>Assertions</h4><table><thead><tr><th>surface</th><th>expected</th><th>actual</th></tr></thead>
+<tbody>
+<tr class="ok">
+      <td><code>code[0]</code></td>
+      <td><code>{&quot;status&quot;:&quot;error&quot;}</code></td>
+      <td><code>—</code></td>
+    </tr>
+<tr class="ok">
+      <td><code>code[1]</code></td>
+      <td><code>{&quot;status&quot;:&quot;error&quot;}</code></td>
+      <td><code>—</code></td>
+    </tr>
+<tr class="ok">
+      <td><code>code[2]</code></td>
+      <td><code>{&quot;status&quot;:&quot;error&quot;}</code></td>
+      <td><code>—</code></td>
+    </tr>
+<tr class="ok">
+      <td><code>code[3]</code></td>
+      <td><code>{&quot;status&quot;:&quot;link_error&quot;}</code></td>
+      <td><code>—</code></td>
+    </tr>
+</tbody></table>
+        
+        <p class="src"><a href="index.html#code-05-forbidden-apis">why this case exists, with quoted requirements →</a></p>
+      </div>
+    </details>
+  </article>
+  <article class="case" id="code-06-value-marshaling">
+    <details>
+      <summary><span class="badge pass">pass</span><code class="cid">code-06-value-marshaling</code><span class="why">Structured values arrive as deep copies, host functions are callable proxies, and returned promises are awaited.</span>
+        <span class="meta">118 ms</span>
+      </summary>
+      <div class="body">
+        
+        <h4>Assertions</h4><table><thead><tr><th>surface</th><th>expected</th><th>actual</th></tr></thead>
+<tbody>
+<tr class="ok">
+      <td><code>code[0]</code></td>
+      <td><code>{&quot;status&quot;:&quot;success&quot;,&quot;result&quot;:{&quot;map&quot;:[[1,&quot;a&quot;]],&quot;set&quot;:[1,2],&quot;date&quot;:&quot;1970-01-01T00:00:00.000Z&quot;,&quot;typed&quot;:[1,2,3]}}</code></td>
+      <td><code>—</code></td>
+    </tr>
+<tr class="ok">
+      <td><code>code[1]</code></td>
+      <td><code>{&quot;status&quot;:&quot;success&quot;,&quot;result&quot;:42}</code></td>
+      <td><code>—</code></td>
+    </tr>
+<tr class="ok">
+      <td><code>code[2]</code></td>
+      <td><code>{&quot;status&quot;:&quot;success&quot;,&quot;result&quot;:9}</code></td>
+      <td><code>—</code></td>
+    </tr>
+</tbody></table>
+        
+        <p class="src"><a href="index.html#code-06-value-marshaling">why this case exists, with quoted requirements →</a></p>
+      </div>
+    </details>
+  </article>
+  <article class="case" id="code-07-terminate">
+    <details>
+      <summary><span class="badge pass">pass</span><code class="cid">code-07-terminate</code><span class="why">terminate() settles at a yield point with the caller reason; calling it twice is a no-op.</span>
+        <span class="meta">98 ms</span>
+      </summary>
+      <div class="body">
+        
+        <h4>Assertions</h4><table><thead><tr><th>surface</th><th>expected</th><th>actual</th></tr></thead>
+<tbody>
+<tr class="ok">
+      <td><code>code[0]</code></td>
+      <td><code>{&quot;status&quot;:&quot;terminated&quot;}</code></td>
+      <td><code>—</code></td>
+    </tr>
+<tr class="ok">
+      <td><code>code[0].error.message</code></td>
+      <td><code>{&quot;contains&quot;:&quot;probe-terminate&quot;}</code></td>
+      <td><code>—</code></td>
+    </tr>
+</tbody></table>
+        
+        <p class="src"><a href="index.html#code-07-terminate">why this case exists, with quoted requirements →</a></p>
+      </div>
+    </details>
+  </article>
+  <article class="case" id="code-08-memory-limit">
+    <details>
+      <summary><span class="badge pass">pass</span><code class="cid">code-08-memory-limit</code><span class="why">When the engine accounts heap, a small memoryLimitBytes settles the handle with status memory.</span>
+        <span class="meta">46 ms</span>
+      </summary>
+      <div class="body">
+        
+        <h4>Assertions</h4><table><thead><tr><th>surface</th><th>expected</th><th>actual</th></tr></thead>
+<tbody>
+<tr class="ok">
+      <td><code>code[0]</code></td>
+      <td><code>{&quot;status&quot;:&quot;memory&quot;}</code></td>
+      <td><code>—</code></td>
+    </tr>
+</tbody></table>
+        
+        <p class="src"><a href="index.html#code-08-memory-limit">why this case exists, with quoted requirements →</a></p>
+      </div>
+    </details>
+  </article>
+  <article class="case" id="code-09-console-logs">
+    <details>
+      <summary><span class="badge pass">pass</span><code class="cid">code-09-console-logs</code><span class="why">SHOULD: console output is captured into result.logs when no console global is supplied.</span>
+        <span class="meta">44 ms</span>
+      </summary>
+      <div class="body">
+        
+        <h4>Assertions</h4><table><thead><tr><th>surface</th><th>expected</th><th>actual</th></tr></thead>
+<tbody>
+<tr class="ok">
+      <td><code>code[0]</code></td>
+      <td><code>{&quot;status&quot;:&quot;success&quot;,&quot;result&quot;:1}</code></td>
+      <td><code>—</code></td>
+    </tr>
+<tr class="ok">
+      <td><code>code[0].logs.0.args</code></td>
+      <td><code>{&quot;contains&quot;:[&quot;probe-log&quot;]}</code></td>
+      <td><code>—</code></td>
+    </tr>
+</tbody></table>
+        
+        <p class="src"><a href="index.html#code-09-console-logs">why this case exists, with quoted requirements →</a></p>
+      </div>
+    </details>
+  </article>
+  <article class="case" id="code-10-syntax-location">
+    <details>
+      <summary><span class="badge pass">pass</span><code class="cid">code-10-syntax-location</code><span class="why">SHOULD: a syntactic error carries line/column pointing at the caller source.</span>
+        <span class="meta">45 ms</span>
+      </summary>
+      <div class="body">
+        
+        <h4>Assertions</h4><table><thead><tr><th>surface</th><th>expected</th><th>actual</th></tr></thead>
+<tbody>
+<tr class="ok">
+      <td><code>code[0]</code></td>
+      <td><code>{&quot;status&quot;:&quot;error&quot;}</code></td>
+      <td><code>—</code></td>
+    </tr>
+<tr class="ok">
+      <td><code>code[0].error.line</code></td>
+      <td><code>1</code></td>
+      <td><code>—</code></td>
+    </tr>
+</tbody></table>
+        
+        <p class="src"><a href="index.html#code-10-syntax-location">why this case exists, with quoted requirements →</a></p>
+      </div>
+    </details>
+  </article>
+  <article class="case" id="code-11-no-wall-clock-timeout">
+    <details>
+      <summary><span class="badge pass">pass</span><code class="cid">code-11-no-wall-clock-timeout</code><span class="why">A 300 ms synchronous computation is not killed: runtimes must not invent a silent wall-clock timeout.</span>
+        <span class="meta">347 ms</span>
+      </summary>
+      <div class="body">
+        
+        <h4>Assertions</h4><table><thead><tr><th>surface</th><th>expected</th><th>actual</th></tr></thead>
+<tbody>
+<tr class="ok">
+      <td><code>code[0]</code></td>
+      <td><code>{&quot;status&quot;:&quot;success&quot;,&quot;result&quot;:&quot;finished&quot;}</code></td>
+      <td><code>—</code></td>
+    </tr>
+</tbody></table>
+        
+        <p class="src"><a href="index.html#code-11-no-wall-clock-timeout">why this case exists, with quoted requirements →</a></p>
+      </div>
+    </details>
+  </article>
+  <article class="case" id="code-12-top-level-await">
+    <details>
+      <summary><span class="badge pass">pass</span><code class="cid">code-12-top-level-await</code><span class="why">Top-level await completes and the module result is available afterwards.</span>
+        <span class="meta">40 ms</span>
+      </summary>
+      <div class="body">
+        
+        <h4>Assertions</h4><table><thead><tr><th>surface</th><th>expected</th><th>actual</th></tr></thead>
+<tbody>
+<tr class="ok">
+      <td><code>code[0]</code></td>
+      <td><code>{&quot;status&quot;:&quot;success&quot;,&quot;result&quot;:11}</code></td>
+      <td><code>—</code></td>
+    </tr>
+</tbody></table>
+        
+        <p class="src"><a href="index.html#code-12-top-level-await">why this case exists, with quoted requirements →</a></p>
+      </div>
+    </details>
+  </article>
+  <article class="case" id="code-13-timers">
+    <details>
+      <summary><span class="badge pass">pass</span><code class="cid">code-13-timers</code><span class="why">setTimeout is absent by default and becomes a module-scope binding when bridged through globals.</span>
+        <span class="meta">77 ms</span>
+      </summary>
+      <div class="body">
+        
+        <h4>Assertions</h4><table><thead><tr><th>surface</th><th>expected</th><th>actual</th></tr></thead>
+<tbody>
+<tr class="ok">
+      <td><code>code[0]</code></td>
+      <td><code>{&quot;status&quot;:&quot;success&quot;,&quot;result&quot;:&quot;undefined&quot;}</code></td>
+      <td><code>—</code></td>
+    </tr>
+<tr class="ok">
+      <td><code>code[1]</code></td>
+      <td><code>{&quot;status&quot;:&quot;success&quot;,&quot;result&quot;:&quot;function&quot;}</code></td>
+      <td><code>—</code></td>
+    </tr>
+</tbody></table>
+        
+        <p class="src"><a href="index.html#code-13-timers">why this case exists, with quoted requirements →</a></p>
+      </div>
+    </details>
+  </article>
+  <article class="case" id="code-14-import-meta-url">
+    <details>
+      <summary><span class="badge pass">pass</span><code class="cid">code-14-import-meta-url</code><span class="why">import.meta.url is synthetic and never a host path.</span>
+        <span class="meta">42 ms</span>
+      </summary>
+      <div class="body">
+        
+        <h4>Assertions</h4><table><thead><tr><th>surface</th><th>expected</th><th>actual</th></tr></thead>
+<tbody>
+<tr class="ok">
+      <td><code>code[0]</code></td>
+      <td><code>{&quot;status&quot;:&quot;success&quot;}</code></td>
+      <td><code>—</code></td>
+    </tr>
+<tr class="ok">
+      <td><code>code[0].result</code></td>
+      <td><code>{&quot;contains&quot;:&quot;sandbox:&quot;}</code></td>
+      <td><code>—</code></td>
+    </tr>
+</tbody></table>
+        
+        <p class="src"><a href="index.html#code-14-import-meta-url">why this case exists, with quoted requirements →</a></p>
+      </div>
+    </details>
+  </article>
+  <article class="case" id="code-15-bridged-function-boundary">
+    <details>
+      <summary><span class="badge pass">pass</span><code class="cid">code-15-bridged-function-boundary</code><span class="why">A bridged host function sees only its explicit arguments: the sandbox cannot reach a host receiver.</span>
+        <span class="meta">44 ms</span>
+      </summary>
+      <div class="body">
+        
+        <h4>Assertions</h4><table><thead><tr><th>surface</th><th>expected</th><th>actual</th></tr></thead>
+<tbody>
+<tr class="ok">
+      <td><code>code[0]</code></td>
+      <td><code>{&quot;status&quot;:&quot;success&quot;,&quot;result&quot;:&quot;no-this&quot;}</code></td>
+      <td><code>—</code></td>
+    </tr>
+</tbody></table>
+        
+        <p class="src"><a href="index.html#code-15-bridged-function-boundary">why this case exists, with quoted requirements →</a></p>
+      </div>
+    </details>
+  </article>
+  <article class="case" id="code-16-abort-signal">
+    <details>
+      <summary><span class="badge pass">pass</span><code class="cid">code-16-abort-signal</code><span class="why">SHOULD: thread termination aborts in-flight runCode by calling handle.terminate().</span>
+        <span class="meta">137 ms</span>
+      </summary>
+      <div class="body">
+        
+        <h4>Assertions</h4><table><thead><tr><th>surface</th><th>expected</th><th>actual</th></tr></thead>
+<tbody>
+<tr class="ok">
+      <td><code>code[0]</code></td>
+      <td><code>{&quot;status&quot;:&quot;terminated&quot;}</code></td>
+      <td><code>—</code></td>
+    </tr>
+<tr class="ok">
+      <td><code>terminated</code></td>
+      <td><code>{&quot;notEquals&quot;:null}</code></td>
+      <td><code>—</code></td>
+    </tr>
+</tbody></table>
+        
+        <p class="src"><a href="index.html#code-16-abort-signal">why this case exists, with quoted requirements →</a></p>
+      </div>
+    </details>
+  </article>
+  </section>
+  <section id="06-key-value-store">
+    <h3>06-key-value-store.json</h3>
+    <p class="about">Durable per-thread key-value store semantics.</p>
+  <article class="case" id="kv-01-json-roundtrip">
+    <details>
+      <summary><span class="badge pass">pass</span><code class="cid">kv-01-json-roundtrip</code><span class="why">A nested JSON value survives a write/read round trip in the same execution.</span>
+        <span class="meta">78 ms</span>
+      </summary>
+      <div class="body">
+        
+        <h4>Assertions</h4><table><thead><tr><th>surface</th><th>expected</th><th>actual</th></tr></thead>
+<tbody>
+<tr class="ok">
+      <td><code>tools.results[1]</code></td>
+      <td><code>&quot;{\&quot;a\&quot;:[1,2],\&quot;b\&quot;:null}&quot;</code></td>
+      <td><code>—</code></td>
+    </tr>
+<tr class="ok">
+      <td><code>status</code></td>
+      <td><code>&quot;idle&quot;</code></td>
+      <td><code>—</code></td>
+    </tr>
+</tbody></table>
+        
+        <p class="src"><a href="index.html#kv-01-json-roundtrip">why this case exists, with quoted requirements →</a></p>
+      </div>
+    </details>
+  </article>
+  <article class="case" id="kv-02-missing-and-delete">
+    <details>
+      <summary><span class="badge pass">pass</span><code class="cid">kv-02-missing-and-delete</code><span class="why">A missing key reads null; setValue(null) deletes; the next read is null again.</span>
+        <span class="meta">61 ms</span>
+      </summary>
+      <div class="body">
+        
+        <h4>Assertions</h4><table><thead><tr><th>surface</th><th>expected</th><th>actual</th></tr></thead>
+<tbody>
+<tr class="ok">
+      <td><code>tools.results</code></td>
+      <td><code>[&quot;null&quot;,&quot;null&quot;,&quot;null&quot;]</code></td>
+      <td><code>—</code></td>
+    </tr>
+</tbody></table>
+        
+        <p class="src"><a href="index.html#kv-02-missing-and-delete">why this case exists, with quoted requirements →</a></p>
+      </div>
+    </details>
+  </article>
+  <article class="case" id="kv-03-durable-across-executions">
+    <details>
+      <summary><span class="badge pass">pass</span><code class="cid">kv-03-durable-across-executions</code><span class="why">A value written in one execution is readable in a later execution of the same thread.</span>
+        <span class="meta">85 ms</span>
+      </summary>
+      <div class="body">
+        
+        <h4>Assertions</h4><table><thead><tr><th>surface</th><th>expected</th><th>actual</th></tr></thead>
+<tbody>
+<tr class="ok">
+      <td><code>tools.results[1]</code></td>
+      <td><code>&quot;41&quot;</code></td>
+      <td><code>—</code></td>
+    </tr>
+<tr class="ok">
+      <td><code>status</code></td>
+      <td><code>&quot;idle&quot;</code></td>
+      <td><code>—</code></td>
+    </tr>
+</tbody></table>
+        
+        <p class="src"><a href="index.html#kv-03-durable-across-executions">why this case exists, with quoted requirements →</a></p>
+      </div>
+    </details>
+  </article>
+  <article class="case" id="kv-04-isolation-from-child">
+    <details>
+      <summary><span class="badge pass">pass</span><code class="cid">kv-04-isolation-from-child</code><span class="why">A child cannot read the parent key space and does not inherit parent values.</span>
+        <span class="meta">113 ms</span>
+      </summary>
+      <div class="body">
+        
+        <h4>Assertions</h4><table><thead><tr><th>surface</th><th>expected</th><th>actual</th></tr></thead>
+<tbody>
+<tr class="ok">
+      <td><code>tools.results[0] · child:worker</code></td>
+      <td><code>&quot;null&quot;</code></td>
+      <td><code>—</code></td>
+    </tr>
+</tbody></table>
+        
+        <p class="src"><a href="index.html#kv-04-isolation-from-child">why this case exists, with quoted requirements →</a></p>
+      </div>
+    </details>
+  </article>
+  </section>
+  <section id="08-no-client-required">
+    <h3>08-no-client-required.json</h3>
+    <p class="about">Client-API-adjacent requirements that need no HTTP or WebSocket client: a store restart, two deliberately broken packages read through the loader, a vision-capable model, and two prompt-backed sides. `api-10` stays manual because it reads the ADR that documents the sandbox limit, not a runtime surface.</p>
+  <article class="case" id="api-06-eviction-queue-durable">
+    <details>
+      <summary><span class="badge pass">pass</span><code class="cid">api-06-eviction-queue-durable</code><span class="why">Queued entries live in the store, not the process: a fresh Runtime over the same store still sees both, in order. No resume claim — the spec is silent on how an evicted object wakes.</span>
+        <span class="meta">11 ms</span>
+      </summary>
+      <div class="body">
+        
+        <h4>Assertions</h4><table><thead><tr><th>surface</th><th>expected</th><th>actual</th></tr></thead>
+<tbody>
+<tr class="ok">
+      <td><code>queue</code></td>
+      <td><code>[{&quot;kind&quot;:&quot;message&quot;,&quot;role&quot;:&quot;user&quot;,&quot;content&quot;:&quot;QUEUED-ONE&quot;,&quot;side&quot;:&quot;a&quot;},{&quot;kind&quot;:&quot;message&quot;,&quot;role&quot;:&quot;user&quot;,&quot;content&quot;:&quot;QUEUED-TWO&quot;,&quot;side&quot;:&quot;a&quot;}]</code></td>
+      <td><code>—</code></td>
+    </tr>
+</tbody></table>
+        
+        <p class="src"><a href="index.html#api-06-eviction-queue-durable">why this case exists, with quoted requirements →</a></p>
+      </div>
+    </details>
+  </article>
+  <article class="case" id="api-08-attachment-parts">
+    <details>
+      <summary><span class="badge pass">pass</span><code class="cid">api-08-attachment-parts</code><span class="why">With a model that declares image support, an image attachment reaches the provider as an image part and stays an attachment on the persisted message.</span>
+        <span class="meta">16 ms</span>
+      </summary>
+      <div class="body">
+        
+        <h4>Assertions</h4><table><thead><tr><th>surface</th><th>expected</th><th>actual</th></tr></thead>
+<tbody>
+<tr class="ok">
+      <td><code>model.requests[0].parts</code></td>
+      <td><code>{&quot;contains&quot;:[{&quot;type&quot;:&quot;text&quot;,&quot;text&quot;:&quot;LOOK&quot;},{&quot;type&quot;:&quot;image&quot;,&quot;mediaType&quot;:&quot;image/png&quot;}]}</code></td>
+      <td><code>—</code></td>
+    </tr>
+<tr class="ok">
+      <td><code>messages.attachments</code></td>
+      <td><code>{&quot;length&quot;:1}</code></td>
+      <td><code>—</code></td>
+    </tr>
+<tr class="ok">
+      <td><code>messages.attachments[0].mimeType</code></td>
+      <td><code>&quot;image/png&quot;</code></td>
+      <td><code>—</code></td>
+    </tr>
+<tr class="ok">
+      <td><code>messages.attachments[0].name</code></td>
+      <td><code>{&quot;contains&quot;:&quot;probe.png&quot;}</code></td>
+      <td><code>—</code></td>
+    </tr>
+</tbody></table>
+        
+        <p class="src"><a href="index.html#api-08-attachment-parts">why this case exists, with quoted requirements →</a></p>
+      </div>
+    </details>
+  </article>
+  <article class="case" id="api-09-parent-hook-missing">
+    <details>
+      <summary><span class="badge pass">pass</span><code class="cid">api-09-parent-hook-missing</code><span class="why">A child requiring a hook id nothing defines makes the parent package unloadable instead of silently hookless.</span>
+        <span class="meta">6 ms</span>
+      </summary>
+      <div class="body">
+        
+        <h4>Assertions</h4><table><thead><tr><th>surface</th><th>expected</th><th>actual</th></tr></thead>
+<tbody>
+<tr class="ok">
+      <td><code>load.issues</code></td>
+      <td><code>{&quot;length&quot;:1}</code></td>
+      <td><code>—</code></td>
+    </tr>
+<tr class="ok">
+      <td><code>load.issues[0].severity</code></td>
+      <td><code>&quot;error&quot;</code></td>
+      <td><code>—</code></td>
+    </tr>
+<tr class="ok">
+      <td><code>load.issues[0].message</code></td>
+      <td><code>{&quot;contains&quot;:&quot;is not available&quot;}</code></td>
+      <td><code>—</code></td>
+    </tr>
+</tbody></table>
+        
+        <p class="src"><a href="index.html#api-09-parent-hook-missing">why this case exists, with quoted requirements →</a></p>
+      </div>
+    </details>
+  </article>
+  <article class="case" id="api-09-parent-hook-user-scoped">
+    <details>
+      <summary><span class="badge pass">pass</span><code class="cid">api-09-parent-hook-user-scoped</code><span class="why">A user-scope hook id resolves but can never compose onto a parent, so the load must fail closed (factory/bugs/parent-hook-user-scope-skipped.md).</span>
+        <span class="meta">6 ms</span>
+      </summary>
+      <div class="body">
+        
+        <h4>Assertions</h4><table><thead><tr><th>surface</th><th>expected</th><th>actual</th></tr></thead>
+<tbody>
+<tr class="ok">
+      <td><code>load.issues</code></td>
+      <td><code>{&quot;length&quot;:1}</code></td>
+      <td><code>—</code></td>
+    </tr>
+<tr class="ok">
+      <td><code>load.issues[0].severity</code></td>
+      <td><code>&quot;error&quot;</code></td>
+      <td><code>—</code></td>
+    </tr>
+<tr class="ok">
+      <td><code>load.issues[0].message</code></td>
+      <td><code>{&quot;contains&quot;:&quot;user-scoped&quot;}</code></td>
+      <td><code>—</code></td>
+    </tr>
+</tbody></table>
+        
+        <p class="src"><a href="index.html#api-09-parent-hook-user-scoped">why this case exists, with quoted requirements →</a></p>
+      </div>
+    </details>
+  </article>
+  <article class="case" id="api-11-perspective-mapping">
+    <details>
+      <summary><span class="badge pass">pass</span><code class="cid">api-11-perspective-mapping</code><span class="why">Both sides are prompt-backed, so the same history is rendered twice: side A shows its own tool call as an assistant turn, side B sees side A's turn as a user message with no call at all.</span>
+        <span class="meta">45 ms</span>
+      </summary>
+      <div class="body">
+        
+        <h4>Assertions</h4><table><thead><tr><th>surface</th><th>expected</th><th>actual</th></tr></thead>
+<tbody>
+<tr class="ok">
+      <td><code>model.views[1].side</code></td>
+      <td><code>&quot;b&quot;</code></td>
+      <td><code>—</code></td>
+    </tr>
+<tr class="ok">
+      <td><code>model.views[1].messages</code></td>
+      <td><code>[{&quot;role&quot;:&quot;system&quot;},{&quot;role&quot;:&quot;assistant&quot;}]</code></td>
+      <td><code>—</code></td>
+    </tr>
+<tr class="ok">
+      <td><code>model.views[2].messages</code></td>
+      <td><code>[{&quot;role&quot;:&quot;system&quot;},{&quot;role&quot;:&quot;user&quot;},{&quot;role&quot;:&quot;assistant&quot;,&quot;toolCalls&quot;:[&quot;record&quot;]},{&quot;role&quot;:&quot;tool&quot;},{&quot;role&quot;:&quot;user&quot;}]</code></td>
+      <td><code>—</code></td>
+    </tr>
+</tbody></table>
+        
+        <p class="src"><a href="index.html#api-11-perspective-mapping">why this case exists, with quoted requirements →</a></p>
+      </div>
+    </details>
+  </article>
+  <article class="case" id="api-12-session-turn-cap">
+    <details>
+      <summary><span class="badge pass">pass</span><code class="cid">api-12-session-turn-cap</code><span class="why">With two prompt-backed sides and no stop condition, the turn cap alone ends the session: four alternations, then idle, and the thread is not terminated.</span>
+        <span class="meta">40 ms</span>
+      </summary>
+      <div class="body">
+        
+        <h4>Assertions</h4><table><thead><tr><th>surface</th><th>expected</th><th>actual</th></tr></thead>
+<tbody>
+<tr class="ok">
+      <td><code>model.calls</code></td>
+      <td><code>4</code></td>
+      <td><code>—</code></td>
+    </tr>
+<tr class="ok">
+      <td><code>status</code></td>
+      <td><code>&quot;idle&quot;</code></td>
+      <td><code>—</code></td>
+    </tr>
+<tr class="ok">
+      <td><code>terminated</code></td>
+      <td><code>null</code></td>
+      <td><code>—</code></td>
+    </tr>
+</tbody></table>
+        
+        <p class="src"><a href="index.html#api-12-session-turn-cap">why this case exists, with quoted requirements →</a></p>
+      </div>
+    </details>
+  </article>
+  </section>
+
+<section id="manual"><h3>Manual cases (not run)</h3>
+<ul><li><a href="index.html#api-01-routes-auth-owner"><code>api-01-routes-auth-owner</code></a></li><li><a href="index.html#api-02-stream-frames"><code>api-02-stream-frames</code></a></li><li><a href="index.html#api-03-reasoning"><code>api-03-reasoning</code></a></li><li><a href="index.html#api-04-deletion-cascade"><code>api-04-deletion-cascade</code></a></li><li><a href="index.html#api-05-bootstrap-endpoints"><code>api-05-bootstrap-endpoints</code></a></li><li><a href="index.html#api-07-runtime-streams"><code>api-07-runtime-streams</code></a></li><li><a href="index.html#api-10-sandbox-documentation"><code>api-10-sandbox-documentation</code></a></li></ul></section>
+</body>
+</html>

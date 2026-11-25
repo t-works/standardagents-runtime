@@ -1,0 +1,1899 @@
+{
+  "run": {
+    "id": "2026-11-24T22-44-41-527Z-b7e063a",
+    "gitSha": "b7e063a",
+    "runtimeVersion": "0.2.5",
+    "model": "scripted",
+    "specVersion": "0.2.0",
+    "node": "v24.21.0",
+    "startedAt": "2026-11-24T22:44:41.527Z",
+    "durationMs": 7643,
+    "totals": {
+      "pass": 58,
+      "fail": 0,
+      "error": 0,
+      "notImplemented": 0,
+      "manual": 7
+    }
+  },
+  "cases": [
+    {
+      "suite": "01-execution-model.json",
+      "id": "exec-01-step-cycle",
+      "status": "pass",
+      "durationMs": 65,
+      "assertions": [
+        {
+          "kind": "hooks.order",
+          "ok": true,
+          "expected": [
+            "pipeline_after_system",
+            "pipeline_filter_messages",
+            "pipeline_prefilter",
+            "pipeline_after_system",
+            "pipeline_filter_messages",
+            "pipeline_prefilter"
+          ]
+        },
+        {
+          "kind": "tools.order",
+          "ok": true,
+          "expected": [
+            "record",
+            "record"
+          ]
+        },
+        {
+          "kind": "tools.args",
+          "ok": true,
+          "expected": [
+            {
+              "value": "a"
+            },
+            {
+              "value": "b"
+            }
+          ]
+        },
+        {
+          "kind": "tools.status",
+          "ok": true,
+          "expected": [
+            "success",
+            "success"
+          ]
+        },
+        {
+          "kind": "messages.roles",
+          "ok": true,
+          "expected": [
+            "user",
+            "assistant",
+            "tool",
+            "tool",
+            "assistant"
+          ]
+        },
+        {
+          "kind": "model.calls",
+          "ok": true,
+          "expected": 2
+        },
+        {
+          "kind": "status",
+          "ok": true,
+          "expected": "idle"
+        },
+        {
+          "kind": "terminated",
+          "ok": true,
+          "expected": null
+        }
+      ]
+    },
+    {
+      "suite": "01-execution-model.json",
+      "id": "exec-02-tool-error-persisted",
+      "status": "pass",
+      "durationMs": 45,
+      "assertions": [
+        {
+          "kind": "tools.order",
+          "ok": true,
+          "expected": [
+            "boom",
+            "record"
+          ]
+        },
+        {
+          "kind": "tools.status",
+          "ok": true,
+          "expected": [
+            "error",
+            "success"
+          ]
+        },
+        {
+          "kind": "messages.contains",
+          "ok": true,
+          "expected": {
+            "contains": [
+              "probe-boom"
+            ]
+          }
+        },
+        {
+          "kind": "messages.roles",
+          "ok": true,
+          "expected": [
+            "user",
+            "assistant",
+            "tool",
+            "tool",
+            "assistant"
+          ]
+        },
+        {
+          "kind": "model.calls",
+          "ok": true,
+          "expected": 2
+        },
+        {
+          "kind": "status",
+          "ok": true,
+          "expected": "idle"
+        }
+      ]
+    },
+    {
+      "suite": "01-execution-model.json",
+      "id": "exec-03-injected-after-snapshot",
+      "status": "pass",
+      "durationMs": 45,
+      "assertions": [
+        {
+          "kind": "model.requests",
+          "index": 0,
+          "field": "users",
+          "ok": true,
+          "expected": {
+            "notContains": [
+              "LATE-INJECT",
+              "SILENT-INJECT"
+            ]
+          }
+        },
+        {
+          "kind": "model.requests",
+          "index": 1,
+          "field": "users",
+          "ok": true,
+          "expected": {
+            "contains": [
+              "LATE-INJECT",
+              "SILENT-INJECT"
+            ]
+          }
+        },
+        {
+          "kind": "model.calls",
+          "ok": true,
+          "expected": 2
+        },
+        {
+          "kind": "status",
+          "ok": true,
+          "expected": "idle"
+        }
+      ]
+    },
+    {
+      "suite": "01-execution-model.json",
+      "id": "exec-04-handler-single-turn",
+      "status": "pass",
+      "durationMs": 16,
+      "assertions": [
+        {
+          "kind": "model.calls",
+          "ok": true,
+          "expected": 0
+        },
+        {
+          "kind": "messages.roles",
+          "ok": true,
+          "expected": [
+            "user",
+            "assistant"
+          ]
+        },
+        {
+          "kind": "messages.contains",
+          "ok": true,
+          "expected": {
+            "contains": [
+              "handler:hello"
+            ]
+          }
+        },
+        {
+          "kind": "values",
+          "ok": true,
+          "expected": {
+            "handler.turns": 1,
+            "handler.lastContent": "hello"
+          }
+        },
+        {
+          "kind": "status",
+          "ok": true,
+          "expected": {
+            "oneOf": [
+              "idle",
+              "awaiting_human"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "suite": "01-execution-model.json",
+      "id": "exec-05-serialized-flow",
+      "status": "pass",
+      "durationMs": 325,
+      "assertions": [
+        {
+          "kind": "tools.maxConcurrent",
+          "ok": true,
+          "expected": 1
+        },
+        {
+          "kind": "tools.order",
+          "ok": true,
+          "expected": {
+            "contains": [
+              "slow",
+              "record"
+            ]
+          }
+        },
+        {
+          "kind": "tools.args",
+          "ok": true,
+          "expected": {
+            "contains": [
+              {
+                "value": "second"
+              }
+            ]
+          }
+        },
+        {
+          "kind": "model.calls",
+          "ok": true,
+          "expected": {
+            "atLeast": 2
+          }
+        },
+        {
+          "kind": "status",
+          "ok": true,
+          "expected": "idle"
+        }
+      ]
+    },
+    {
+      "suite": "01-execution-model.json",
+      "id": "exec-06-effect-and-decision",
+      "status": "pass",
+      "durationMs": 25,
+      "assertions": [
+        {
+          "kind": "effects",
+          "ok": true,
+          "expected": {
+            "contains": [
+              "tick",
+              "decide_tick"
+            ]
+          }
+        },
+        {
+          "kind": "values",
+          "ok": true,
+          "expected": {
+            "decisions.log": [
+              {
+                "executionIsNull": true,
+                "probability": 1
+              }
+            ]
+          }
+        },
+        {
+          "kind": "model.calls",
+          "ok": true,
+          "expected": 0
+        },
+        {
+          "kind": "status",
+          "ok": true,
+          "expected": "idle"
+        }
+      ]
+    },
+    {
+      "suite": "01-execution-model.json",
+      "id": "exec-07-human-turn-parks",
+      "status": "pass",
+      "durationMs": 34,
+      "assertions": [
+        {
+          "kind": "model.calls",
+          "ok": true,
+          "expected": 1
+        },
+        {
+          "kind": "status",
+          "ok": true,
+          "expected": {
+            "oneOf": [
+              "awaiting_human",
+              "idle"
+            ]
+          }
+        },
+        {
+          "kind": "terminated",
+          "ok": true,
+          "expected": null
+        }
+      ]
+    },
+    {
+      "suite": "02-tools-and-stops.json",
+      "id": "stop-01-stoptool-precedes-response",
+      "status": "pass",
+      "durationMs": 33,
+      "assertions": [
+        {
+          "kind": "model.calls",
+          "ok": true,
+          "expected": 1
+        },
+        {
+          "kind": "tools.order",
+          "ok": true,
+          "expected": [
+            "record",
+            "stop_now"
+          ]
+        },
+        {
+          "kind": "status",
+          "ok": true,
+          "expected": "idle"
+        },
+        {
+          "kind": "terminated",
+          "ok": true,
+          "expected": null
+        }
+      ]
+    },
+    {
+      "suite": "02-tools-and-stops.json",
+      "id": "stop-02-stop-on-response",
+      "status": "pass",
+      "durationMs": 22,
+      "assertions": [
+        {
+          "kind": "model.calls",
+          "ok": true,
+          "expected": 1
+        },
+        {
+          "kind": "status",
+          "ok": true,
+          "expected": "idle"
+        },
+        {
+          "kind": "terminated",
+          "ok": true,
+          "expected": null
+        }
+      ]
+    },
+    {
+      "suite": "02-tools-and-stops.json",
+      "id": "stop-03-max-steps",
+      "status": "pass",
+      "durationMs": 45,
+      "assertions": [
+        {
+          "kind": "model.calls",
+          "ok": true,
+          "expected": 2
+        },
+        {
+          "kind": "tools.order",
+          "ok": true,
+          "expected": [
+            "record",
+            "record"
+          ]
+        },
+        {
+          "kind": "status",
+          "ok": true,
+          "expected": "idle"
+        },
+        {
+          "kind": "terminated",
+          "ok": true,
+          "expected": null
+        }
+      ]
+    },
+    {
+      "suite": "02-tools-and-stops.json",
+      "id": "stop-05-session-stop-tool",
+      "status": "pass",
+      "durationMs": 26,
+      "assertions": [
+        {
+          "kind": "model.calls",
+          "ok": true,
+          "expected": 1
+        },
+        {
+          "kind": "status",
+          "ok": true,
+          "expected": "idle"
+        },
+        {
+          "kind": "terminated",
+          "ok": true,
+          "expected": null
+        }
+      ]
+    },
+    {
+      "suite": "02-tools-and-stops.json",
+      "id": "tools-01-tool-classes",
+      "status": "pass",
+      "durationMs": 38,
+      "assertions": [
+        {
+          "kind": "model.requests",
+          "index": 0,
+          "field": "tools",
+          "ok": true,
+          "expected": {
+            "contains": [
+              "record",
+              "summarize",
+              "handler_probe",
+              "subagents",
+              "subagent_create",
+              "subagent_message"
+            ]
+          }
+        },
+        {
+          "kind": "model.requests",
+          "index": 0,
+          "field": "toolDetail",
+          "ok": true,
+          "expected": {
+            "notContains": [
+              "hidden_leaf"
+            ]
+          }
+        },
+        {
+          "kind": "model.calls",
+          "ok": true,
+          "expected": 1
+        },
+        {
+          "kind": "status",
+          "ok": true,
+          "expected": "idle"
+        }
+      ]
+    },
+    {
+      "suite": "03-queue-and-termination.json",
+      "id": "queue-01-fifo",
+      "status": "pass",
+      "durationMs": 973,
+      "assertions": [
+        {
+          "kind": "messages.contents",
+          "ok": true,
+          "expected": {
+            "contains": [
+              "START",
+              "FIRST",
+              "SECOND"
+            ]
+          }
+        },
+        {
+          "kind": "tools.order",
+          "ok": true,
+          "expected": {
+            "contains": [
+              "slow"
+            ]
+          }
+        },
+        {
+          "kind": "model.calls",
+          "ok": true,
+          "expected": {
+            "atLeast": 2
+          }
+        },
+        {
+          "kind": "status",
+          "ok": true,
+          "expected": "idle"
+        }
+      ]
+    },
+    {
+      "suite": "03-queue-and-termination.json",
+      "id": "queue-02-queued-tool",
+      "status": "pass",
+      "durationMs": 1535,
+      "assertions": [
+        {
+          "kind": "tools.order",
+          "ok": true,
+          "expected": {
+            "contains": [
+              "slow",
+              "record",
+              "record"
+            ]
+          }
+        },
+        {
+          "kind": "tools.args",
+          "ok": true,
+          "expected": {
+            "contains": [
+              {
+                "value": "QUEUED-TOOL"
+              },
+              {
+                "value": "QUEUED-TOOL-2"
+              }
+            ]
+          }
+        },
+        {
+          "kind": "status",
+          "ok": true,
+          "expected": "idle"
+        }
+      ]
+    },
+    {
+      "suite": "03-queue-and-termination.json",
+      "id": "term-01-soft-terminate",
+      "status": "pass",
+      "durationMs": 556,
+      "assertions": [
+        {
+          "kind": "terminated",
+          "ok": true,
+          "expected": {
+            "notEquals": null
+          }
+        },
+        {
+          "kind": "rejected",
+          "ok": true,
+          "expected": true
+        },
+        {
+          "kind": "model.calls",
+          "ok": true,
+          "expected": 1
+        }
+      ]
+    },
+    {
+      "suite": "04-subagents.json",
+      "id": "sub-01-immediate-at-creation",
+      "status": "pass",
+      "durationMs": 31,
+      "assertions": [
+        {
+          "kind": "children",
+          "ok": true,
+          "expected": {
+            "length": 2
+          }
+        },
+        {
+          "kind": "children",
+          "ok": true,
+          "expected": {
+            "contains": [
+              {
+                "relationship": "immediate_leaf",
+                "name": "leaf"
+              },
+              {
+                "relationship": "env_leaf",
+                "name": "leaf"
+              }
+            ]
+          }
+        },
+        {
+          "kind": "model.calls",
+          "ok": true,
+          "expected": 0
+        },
+        {
+          "kind": "status",
+          "ok": true,
+          "expected": "idle"
+        }
+      ]
+    },
+    {
+      "suite": "04-subagents.json",
+      "id": "sub-02-create-and-registry",
+      "status": "pass",
+      "durationMs": 93,
+      "assertions": [
+        {
+          "kind": "children",
+          "ok": true,
+          "expected": {
+            "contains": [
+              {
+                "relationship": "worker",
+                "name": "worker"
+              }
+            ]
+          }
+        },
+        {
+          "kind": "tools.status",
+          "ok": true,
+          "expected": [
+            "success"
+          ]
+        },
+        {
+          "kind": "messages.contains",
+          "ok": true,
+          "expected": {
+            "contains": [
+              "Started w1"
+            ]
+          }
+        },
+        {
+          "kind": "status",
+          "ok": true,
+          "expected": "idle"
+        }
+      ]
+    },
+    {
+      "suite": "04-subagents.json",
+      "id": "sub-03-create-name-required",
+      "status": "pass",
+      "durationMs": 60,
+      "assertions": [
+        {
+          "kind": "tools.status",
+          "ok": true,
+          "expected": [
+            "error"
+          ]
+        },
+        {
+          "kind": "tools.results",
+          "index": 0,
+          "ok": true,
+          "expected": {
+            "contains": "name"
+          }
+        },
+        {
+          "kind": "status",
+          "ok": true,
+          "expected": "idle"
+        }
+      ]
+    },
+    {
+      "suite": "04-subagents.json",
+      "id": "sub-04-max-instances",
+      "status": "pass",
+      "durationMs": 104,
+      "assertions": [
+        {
+          "kind": "tools.status",
+          "ok": true,
+          "expected": [
+            "success",
+            "success",
+            "error"
+          ]
+        },
+        {
+          "kind": "tools.results",
+          "index": 2,
+          "ok": true,
+          "expected": {
+            "contains": "maxInstances"
+          }
+        },
+        {
+          "kind": "children",
+          "ok": true,
+          "expected": {
+            "length": 2
+          }
+        }
+      ]
+    },
+    {
+      "suite": "04-subagents.json",
+      "id": "sub-05-arguments-interpolated",
+      "status": "pass",
+      "durationMs": 99,
+      "assertions": [
+        {
+          "kind": "values",
+          "thread": "child:worker",
+          "field": "system.current",
+          "ok": true,
+          "expected": {
+            "contains": [
+              "do-one"
+            ]
+          }
+        },
+        {
+          "kind": "status",
+          "ok": true,
+          "expected": "idle"
+        }
+      ]
+    },
+    {
+      "suite": "04-subagents.json",
+      "id": "sub-06-arguments-required",
+      "status": "pass",
+      "durationMs": 59,
+      "assertions": [
+        {
+          "kind": "tools.status",
+          "ok": true,
+          "expected": [
+            "error"
+          ]
+        },
+        {
+          "kind": "tools.results",
+          "index": 0,
+          "ok": true,
+          "expected": {
+            "contains": "task"
+          }
+        }
+      ]
+    },
+    {
+      "suite": "04-subagents.json",
+      "id": "sub-07-attachments-parent-to-child",
+      "status": "pass",
+      "durationMs": 119,
+      "assertions": [
+        {
+          "kind": "tools.status",
+          "ok": true,
+          "expected": [
+            "success",
+            "success"
+          ]
+        },
+        {
+          "kind": "tools.results",
+          "thread": "child:worker",
+          "index": 0,
+          "ok": true,
+          "expected": {
+            "contains": "\"exists\":true"
+          }
+        }
+      ]
+    },
+    {
+      "suite": "04-subagents.json",
+      "id": "sub-07b-attachments-without-initial-message",
+      "status": "pass",
+      "durationMs": 103,
+      "assertions": [
+        {
+          "kind": "messages.contents",
+          "thread": "child:blocking_worker",
+          "index": 0,
+          "ok": true,
+          "expected": {
+            "contains": "shared.txt"
+          }
+        },
+        {
+          "kind": "messages.attachments",
+          "thread": "child:blocking_worker",
+          "ok": true,
+          "expected": {
+            "length": 1
+          }
+        },
+        {
+          "kind": "messages.attachments",
+          "thread": "child:blocking_worker",
+          "index": 0,
+          "field": "path",
+          "ok": true,
+          "expected": "/shared.txt"
+        }
+      ]
+    },
+    {
+      "suite": "04-subagents.json",
+      "id": "sub-07c-later-message-attachments",
+      "status": "pass",
+      "durationMs": 182,
+      "assertions": [
+        {
+          "kind": "messages.attachments",
+          "thread": "child:quiet_worker",
+          "ok": true,
+          "expected": {
+            "length": 1
+          }
+        },
+        {
+          "kind": "tools.results",
+          "thread": "child:quiet_worker",
+          "index": 0,
+          "ok": true,
+          "expected": {
+            "contains": "\"exists\":true"
+          }
+        }
+      ]
+    },
+    {
+      "suite": "04-subagents.json",
+      "id": "sub-08-child-to-parent-implicit",
+      "status": "pass",
+      "durationMs": 123,
+      "assertions": [
+        {
+          "kind": "messages.contains",
+          "ok": true,
+          "expected": {
+            "contains": [
+              "worker-report"
+            ]
+          }
+        },
+        {
+          "kind": "children",
+          "ok": true,
+          "expected": {
+            "contains": [
+              {
+                "relationship": "worker"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "suite": "04-subagents.json",
+      "id": "sub-09-explicit-no-wake",
+      "status": "pass",
+      "durationMs": 89,
+      "assertions": [
+        {
+          "kind": "messages.roles",
+          "ok": true,
+          "expected": [
+            "user",
+            "assistant",
+            "tool",
+            "assistant"
+          ]
+        },
+        {
+          "kind": "children",
+          "ok": true,
+          "expected": {
+            "contains": [
+              {
+                "relationship": "quiet_worker"
+              }
+            ]
+          }
+        },
+        {
+          "kind": "status",
+          "ok": true,
+          "expected": "idle"
+        }
+      ]
+    },
+    {
+      "suite": "04-subagents.json",
+      "id": "sub-10-status-without-termination",
+      "status": "pass",
+      "durationMs": 146,
+      "assertions": [
+        {
+          "kind": "children",
+          "ok": true,
+          "expected": {
+            "contains": [
+              {
+                "relationship": "worker"
+              }
+            ]
+          }
+        },
+        {
+          "kind": "tools.status",
+          "thread": "child:worker",
+          "ok": true,
+          "expected": [
+            "success"
+          ]
+        },
+        {
+          "kind": "terminated",
+          "thread": "child:worker",
+          "ok": true,
+          "expected": null
+        }
+      ]
+    },
+    {
+      "suite": "04-subagents.json",
+      "id": "sub-11-parent-hook-order",
+      "status": "pass",
+      "durationMs": 47,
+      "assertions": [
+        {
+          "kind": "hooks.order",
+          "ok": true,
+          "expected": [
+            "parent_probe_before",
+            "pipeline_after_system",
+            "parent_own",
+            "parent_probe_after"
+          ]
+        },
+        {
+          "kind": "model.calls",
+          "ok": true,
+          "expected": 1
+        }
+      ]
+    },
+    {
+      "suite": "04-subagents.json",
+      "id": "sub-12-scoped-env-runtime-only",
+      "status": "pass",
+      "durationMs": 100,
+      "assertions": [
+        {
+          "kind": "values",
+          "thread": "child:env_leaf",
+          "field": "system.current",
+          "ok": true,
+          "expected": {
+            "notContains": [
+              "s3cret-not-for-model"
+            ]
+          }
+        },
+        {
+          "kind": "values",
+          "thread": "child:env_leaf",
+          "field": "state.env",
+          "ok": true,
+          "expected": {
+            "LEAF_SECRET": "s3cret-not-for-model"
+          }
+        }
+      ]
+    },
+    {
+      "suite": "04-subagents.json",
+      "id": "sub-13-immediate-recursive",
+      "status": "pass",
+      "durationMs": 113,
+      "assertions": [
+        {
+          "kind": "tools.results",
+          "thread": "child:worker",
+          "index": 0,
+          "ok": true,
+          "expected": {
+            "contains": "worker_leaf"
+          }
+        }
+      ]
+    },
+    {
+      "suite": "04-subagents.json",
+      "id": "sub-14-escalate-without-parent",
+      "status": "pass",
+      "durationMs": 41,
+      "assertions": [
+        {
+          "kind": "tools.status",
+          "ok": true,
+          "expected": [
+            "success"
+          ]
+        },
+        {
+          "kind": "status",
+          "ok": true,
+          "expected": "idle"
+        },
+        {
+          "kind": "terminated",
+          "ok": true,
+          "expected": null
+        }
+      ]
+    },
+    {
+      "suite": "04-subagents.json",
+      "id": "sub-15-optional-flag-on",
+      "status": "pass",
+      "durationMs": 38,
+      "assertions": [
+        {
+          "kind": "model.requests",
+          "index": 0,
+          "field": "toolDetail",
+          "ok": true,
+          "expected": {
+            "contains": [
+              "optional_leaf"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "suite": "05-code-execution.json",
+      "id": "code-01-typescript-default-export",
+      "status": "pass",
+      "durationMs": 57,
+      "assertions": [
+        {
+          "kind": "code",
+          "index": 0,
+          "ok": true,
+          "expected": {
+            "status": "success",
+            "result": 3
+          }
+        },
+        {
+          "kind": "status",
+          "ok": true,
+          "expected": "idle"
+        }
+      ]
+    },
+    {
+      "suite": "05-code-execution.json",
+      "id": "code-02-export-resolution",
+      "status": "pass",
+      "durationMs": 170,
+      "assertions": [
+        {
+          "kind": "code",
+          "index": 0,
+          "ok": true,
+          "expected": {
+            "status": "success",
+            "result": 42
+          }
+        },
+        {
+          "kind": "code",
+          "index": 1,
+          "ok": true,
+          "expected": {
+            "status": "link_error"
+          }
+        },
+        {
+          "kind": "code",
+          "index": 2,
+          "ok": true,
+          "expected": {
+            "status": "error"
+          }
+        },
+        {
+          "kind": "code",
+          "index": 3,
+          "ok": true,
+          "expected": {
+            "status": "error"
+          }
+        },
+        {
+          "kind": "code",
+          "index": 3,
+          "field": "error.message",
+          "ok": true,
+          "expected": {
+            "contains": "probe-throw"
+          }
+        }
+      ]
+    },
+    {
+      "suite": "05-code-execution.json",
+      "id": "code-03-module-resolution",
+      "status": "pass",
+      "durationMs": 164,
+      "assertions": [
+        {
+          "kind": "code",
+          "index": 0,
+          "ok": true,
+          "expected": {
+            "status": "success",
+            "result": 7
+          }
+        },
+        {
+          "kind": "code",
+          "index": 1,
+          "ok": true,
+          "expected": {
+            "status": "success",
+            "result": 3
+          }
+        },
+        {
+          "kind": "code",
+          "index": 2,
+          "ok": true,
+          "expected": {
+            "status": "link_error"
+          }
+        },
+        {
+          "kind": "code",
+          "index": 3,
+          "ok": true,
+          "expected": {
+            "status": "link_error"
+          }
+        }
+      ]
+    },
+    {
+      "suite": "05-code-execution.json",
+      "id": "code-04-globals-and-isolation",
+      "status": "pass",
+      "durationMs": 120,
+      "assertions": [
+        {
+          "kind": "code",
+          "index": 0,
+          "ok": true,
+          "expected": {
+            "status": "success",
+            "result": {
+              "onGlobal": "undefined",
+              "value": 5,
+              "keys": []
+            }
+          }
+        },
+        {
+          "kind": "code",
+          "index": 1,
+          "ok": true,
+          "expected": {
+            "status": "success",
+            "result": "mutated"
+          }
+        },
+        {
+          "kind": "code",
+          "index": 2,
+          "ok": true,
+          "expected": {
+            "status": "success",
+            "result": {
+              "leak": "undefined",
+              "hacked": null
+            }
+          }
+        }
+      ]
+    },
+    {
+      "suite": "05-code-execution.json",
+      "id": "code-05-forbidden-apis",
+      "status": "pass",
+      "durationMs": 165,
+      "assertions": [
+        {
+          "kind": "code",
+          "index": 0,
+          "ok": true,
+          "expected": {
+            "status": "error"
+          }
+        },
+        {
+          "kind": "code",
+          "index": 1,
+          "ok": true,
+          "expected": {
+            "status": "error"
+          }
+        },
+        {
+          "kind": "code",
+          "index": 2,
+          "ok": true,
+          "expected": {
+            "status": "error"
+          }
+        },
+        {
+          "kind": "code",
+          "index": 3,
+          "ok": true,
+          "expected": {
+            "status": "link_error"
+          }
+        }
+      ]
+    },
+    {
+      "suite": "05-code-execution.json",
+      "id": "code-06-value-marshaling",
+      "status": "pass",
+      "durationMs": 118,
+      "assertions": [
+        {
+          "kind": "code",
+          "index": 0,
+          "ok": true,
+          "expected": {
+            "status": "success",
+            "result": {
+              "map": [
+                [
+                  1,
+                  "a"
+                ]
+              ],
+              "set": [
+                1,
+                2
+              ],
+              "date": "1970-01-01T00:00:00.000Z",
+              "typed": [
+                1,
+                2,
+                3
+              ]
+            }
+          }
+        },
+        {
+          "kind": "code",
+          "index": 1,
+          "ok": true,
+          "expected": {
+            "status": "success",
+            "result": 42
+          }
+        },
+        {
+          "kind": "code",
+          "index": 2,
+          "ok": true,
+          "expected": {
+            "status": "success",
+            "result": 9
+          }
+        }
+      ]
+    },
+    {
+      "suite": "05-code-execution.json",
+      "id": "code-07-terminate",
+      "status": "pass",
+      "durationMs": 98,
+      "assertions": [
+        {
+          "kind": "code",
+          "index": 0,
+          "ok": true,
+          "expected": {
+            "status": "terminated"
+          }
+        },
+        {
+          "kind": "code",
+          "index": 0,
+          "field": "error.message",
+          "ok": true,
+          "expected": {
+            "contains": "probe-terminate"
+          }
+        }
+      ]
+    },
+    {
+      "suite": "05-code-execution.json",
+      "id": "code-08-memory-limit",
+      "status": "pass",
+      "durationMs": 46,
+      "assertions": [
+        {
+          "kind": "code",
+          "index": 0,
+          "ok": true,
+          "expected": {
+            "status": "memory"
+          }
+        }
+      ]
+    },
+    {
+      "suite": "05-code-execution.json",
+      "id": "code-09-console-logs",
+      "status": "pass",
+      "durationMs": 44,
+      "assertions": [
+        {
+          "kind": "code",
+          "index": 0,
+          "ok": true,
+          "expected": {
+            "status": "success",
+            "result": 1
+          }
+        },
+        {
+          "kind": "code",
+          "index": 0,
+          "field": "logs.0.args",
+          "ok": true,
+          "expected": {
+            "contains": [
+              "probe-log"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "suite": "05-code-execution.json",
+      "id": "code-10-syntax-location",
+      "status": "pass",
+      "durationMs": 45,
+      "assertions": [
+        {
+          "kind": "code",
+          "index": 0,
+          "ok": true,
+          "expected": {
+            "status": "error"
+          }
+        },
+        {
+          "kind": "code",
+          "index": 0,
+          "field": "error.line",
+          "ok": true,
+          "expected": 1
+        }
+      ]
+    },
+    {
+      "suite": "05-code-execution.json",
+      "id": "code-11-no-wall-clock-timeout",
+      "status": "pass",
+      "durationMs": 347,
+      "assertions": [
+        {
+          "kind": "code",
+          "index": 0,
+          "ok": true,
+          "expected": {
+            "status": "success",
+            "result": "finished"
+          }
+        }
+      ]
+    },
+    {
+      "suite": "05-code-execution.json",
+      "id": "code-12-top-level-await",
+      "status": "pass",
+      "durationMs": 40,
+      "assertions": [
+        {
+          "kind": "code",
+          "index": 0,
+          "ok": true,
+          "expected": {
+            "status": "success",
+            "result": 11
+          }
+        }
+      ]
+    },
+    {
+      "suite": "05-code-execution.json",
+      "id": "code-13-timers",
+      "status": "pass",
+      "durationMs": 77,
+      "assertions": [
+        {
+          "kind": "code",
+          "index": 0,
+          "ok": true,
+          "expected": {
+            "status": "success",
+            "result": "undefined"
+          }
+        },
+        {
+          "kind": "code",
+          "index": 1,
+          "ok": true,
+          "expected": {
+            "status": "success",
+            "result": "function"
+          }
+        }
+      ]
+    },
+    {
+      "suite": "05-code-execution.json",
+      "id": "code-14-import-meta-url",
+      "status": "pass",
+      "durationMs": 42,
+      "assertions": [
+        {
+          "kind": "code",
+          "index": 0,
+          "ok": true,
+          "expected": {
+            "status": "success"
+          }
+        },
+        {
+          "kind": "code",
+          "index": 0,
+          "field": "result",
+          "ok": true,
+          "expected": {
+            "contains": "sandbox:"
+          }
+        }
+      ]
+    },
+    {
+      "suite": "05-code-execution.json",
+      "id": "code-15-bridged-function-boundary",
+      "status": "pass",
+      "durationMs": 44,
+      "assertions": [
+        {
+          "kind": "code",
+          "index": 0,
+          "ok": true,
+          "expected": {
+            "status": "success",
+            "result": "no-this"
+          }
+        }
+      ]
+    },
+    {
+      "suite": "05-code-execution.json",
+      "id": "code-16-abort-signal",
+      "status": "pass",
+      "durationMs": 137,
+      "assertions": [
+        {
+          "kind": "code",
+          "index": 0,
+          "ok": true,
+          "expected": {
+            "status": "terminated"
+          }
+        },
+        {
+          "kind": "terminated",
+          "ok": true,
+          "expected": {
+            "notEquals": null
+          }
+        }
+      ]
+    },
+    {
+      "suite": "06-key-value-store.json",
+      "id": "kv-01-json-roundtrip",
+      "status": "pass",
+      "durationMs": 78,
+      "assertions": [
+        {
+          "kind": "tools.results",
+          "index": 1,
+          "ok": true,
+          "expected": "{\"a\":[1,2],\"b\":null}"
+        },
+        {
+          "kind": "status",
+          "ok": true,
+          "expected": "idle"
+        }
+      ]
+    },
+    {
+      "suite": "06-key-value-store.json",
+      "id": "kv-02-missing-and-delete",
+      "status": "pass",
+      "durationMs": 61,
+      "assertions": [
+        {
+          "kind": "tools.results",
+          "ok": true,
+          "expected": [
+            "null",
+            "null",
+            "null"
+          ]
+        }
+      ]
+    },
+    {
+      "suite": "06-key-value-store.json",
+      "id": "kv-03-durable-across-executions",
+      "status": "pass",
+      "durationMs": 85,
+      "assertions": [
+        {
+          "kind": "tools.results",
+          "index": 1,
+          "ok": true,
+          "expected": "41"
+        },
+        {
+          "kind": "status",
+          "ok": true,
+          "expected": "idle"
+        }
+      ]
+    },
+    {
+      "suite": "06-key-value-store.json",
+      "id": "kv-04-isolation-from-child",
+      "status": "pass",
+      "durationMs": 113,
+      "assertions": [
+        {
+          "kind": "tools.results",
+          "thread": "child:worker",
+          "index": 0,
+          "ok": true,
+          "expected": "null"
+        }
+      ]
+    },
+    {
+      "suite": "08-no-client-required.json",
+      "id": "api-06-eviction-queue-durable",
+      "status": "pass",
+      "durationMs": 11,
+      "assertions": [
+        {
+          "kind": "queue",
+          "ok": true,
+          "expected": [
+            {
+              "kind": "message",
+              "role": "user",
+              "content": "QUEUED-ONE",
+              "side": "a"
+            },
+            {
+              "kind": "message",
+              "role": "user",
+              "content": "QUEUED-TWO",
+              "side": "a"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "suite": "08-no-client-required.json",
+      "id": "api-08-attachment-parts",
+      "status": "pass",
+      "durationMs": 16,
+      "assertions": [
+        {
+          "kind": "model.requests",
+          "index": 0,
+          "field": "parts",
+          "ok": true,
+          "expected": {
+            "contains": [
+              {
+                "type": "text",
+                "text": "LOOK"
+              },
+              {
+                "type": "image",
+                "mediaType": "image/png"
+              }
+            ]
+          }
+        },
+        {
+          "kind": "messages.attachments",
+          "ok": true,
+          "expected": {
+            "length": 1
+          }
+        },
+        {
+          "kind": "messages.attachments",
+          "index": 0,
+          "field": "mimeType",
+          "ok": true,
+          "expected": "image/png"
+        },
+        {
+          "kind": "messages.attachments",
+          "index": 0,
+          "field": "name",
+          "ok": true,
+          "expected": {
+            "contains": "probe.png"
+          }
+        }
+      ]
+    },
+    {
+      "suite": "08-no-client-required.json",
+      "id": "api-09-parent-hook-missing",
+      "status": "pass",
+      "durationMs": 6,
+      "assertions": [
+        {
+          "kind": "load.issues",
+          "ok": true,
+          "expected": {
+            "length": 1
+          }
+        },
+        {
+          "kind": "load.issues",
+          "index": 0,
+          "field": "severity",
+          "ok": true,
+          "expected": "error"
+        },
+        {
+          "kind": "load.issues",
+          "index": 0,
+          "field": "message",
+          "ok": true,
+          "expected": {
+            "contains": "is not available"
+          }
+        }
+      ]
+    },
+    {
+      "suite": "08-no-client-required.json",
+      "id": "api-09-parent-hook-user-scoped",
+      "status": "pass",
+      "durationMs": 6,
+      "assertions": [
+        {
+          "kind": "load.issues",
+          "ok": true,
+          "expected": {
+            "length": 1
+          }
+        },
+        {
+          "kind": "load.issues",
+          "index": 0,
+          "field": "severity",
+          "ok": true,
+          "expected": "error"
+        },
+        {
+          "kind": "load.issues",
+          "index": 0,
+          "field": "message",
+          "ok": true,
+          "expected": {
+            "contains": "user-scoped"
+          }
+        }
+      ]
+    },
+    {
+      "suite": "08-no-client-required.json",
+      "id": "api-11-perspective-mapping",
+      "status": "pass",
+      "durationMs": 45,
+      "assertions": [
+        {
+          "kind": "model.views",
+          "index": 1,
+          "field": "side",
+          "ok": true,
+          "expected": "b"
+        },
+        {
+          "kind": "model.views",
+          "index": 1,
+          "field": "messages",
+          "ok": true,
+          "expected": [
+            {
+              "role": "system"
+            },
+            {
+              "role": "assistant"
+            }
+          ]
+        },
+        {
+          "kind": "model.views",
+          "index": 2,
+          "field": "messages",
+          "ok": true,
+          "expected": [
+            {
+              "role": "system"
+            },
+            {
+              "role": "user"
+            },
+            {
+              "role": "assistant",
+              "toolCalls": [
+                "record"
+              ]
+            },
+            {
+              "role": "tool"
+            },
+            {
+              "role": "user"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "suite": "08-no-client-required.json",
+      "id": "api-12-session-turn-cap",
+      "status": "pass",
+      "durationMs": 40,
+      "assertions": [
+        {
+          "kind": "model.calls",
+          "ok": true,
+          "expected": 4
+        },
+        {
+          "kind": "status",
+          "ok": true,
+          "expected": "idle"
+        },
+        {
+          "kind": "terminated",
+          "ok": true,
+          "expected": null
+        }
+      ]
+    }
+  ],
+  "manual": [
+    {
+      "id": "api-01-routes-auth-owner",
+      "suite": "07-client-api-and-streams.json",
+      "requirements": [
+        "S15-0",
+        "S15-1",
+        "S15-2",
+        "S15-3",
+        "S15-4",
+        "S15-5"
+      ]
+    },
+    {
+      "id": "api-02-stream-frames",
+      "suite": "07-client-api-and-streams.json",
+      "requirements": [
+        "S15-6",
+        "S15-7",
+        "S15-11",
+        "S15-12"
+      ]
+    },
+    {
+      "id": "api-03-reasoning",
+      "suite": "07-client-api-and-streams.json",
+      "requirements": [
+        "S15-8",
+        "S15-9"
+      ]
+    },
+    {
+      "id": "api-04-deletion-cascade",
+      "suite": "07-client-api-and-streams.json",
+      "requirements": [
+        "S15-10"
+      ]
+    },
+    {
+      "id": "api-05-bootstrap-endpoints",
+      "suite": "07-client-api-and-streams.json",
+      "requirements": [
+        "S7.5-1"
+      ]
+    },
+    {
+      "id": "api-07-runtime-streams",
+      "suite": "07-client-api-and-streams.json",
+      "requirements": [
+        "S13-1"
+      ]
+    },
+    {
+      "id": "api-10-sandbox-documentation",
+      "suite": "08-no-client-required.json",
+      "requirements": [
+        "S14.4-2",
+        "S14.4-3"
+      ]
+    }
+  ]
+}

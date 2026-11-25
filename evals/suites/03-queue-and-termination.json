@@ -1,0 +1,160 @@
+{
+  "suite": "queue-and-termination",
+  "about": "Queue triggers, FIFO delivery, and soft termination.",
+  "cases": [
+    {
+      "id": "queue-01-fifo",
+      "agent": "probe",
+      "requirements": [
+        "S9-1",
+        "S2-1",
+        "S2-2",
+        "S1-4"
+      ],
+      "why": "Messages queued while a tool runs are injected before the next model call in FIFO order.",
+      "ops": [
+        {
+          "send": "[[tool:slow {\"ms\":200}]] START"
+        },
+        {
+          "queueMessage": {
+            "role": "user",
+            "content": "FIRST"
+          }
+        },
+        {
+          "queueMessage": {
+            "role": "user",
+            "content": "SECOND"
+          }
+        },
+        {
+          "settle": true
+        }
+      ],
+      "expect": [
+        {
+          "kind": "messages.contents",
+          "contains": [
+            "START",
+            "FIRST",
+            "SECOND"
+          ]
+        },
+        {
+          "kind": "tools.order",
+          "contains": [
+            "slow"
+          ]
+        },
+        {
+          "kind": "model.calls",
+          "atLeast": 2
+        },
+        {
+          "kind": "status",
+          "equals": "idle"
+        }
+      ]
+    },
+    {
+      "id": "queue-02-queued-tool",
+      "agent": "probe",
+      "requirements": [
+        "S9-1",
+        "S2-1",
+        "S2-2"
+      ],
+      "why": "Queued tool calls run before the next model call and keep their order.",
+      "ops": [
+        {
+          "send": "[[tool:slow {\"ms\":150}]] START"
+        },
+        {
+          "queueTool": {
+            "name": "record",
+            "args": {
+              "value": "QUEUED-TOOL"
+            }
+          }
+        },
+        {
+          "queueTool": {
+            "name": "record",
+            "args": {
+              "value": "QUEUED-TOOL-2"
+            }
+          }
+        },
+        {
+          "settle": true
+        }
+      ],
+      "expect": [
+        {
+          "kind": "tools.order",
+          "contains": [
+            "slow",
+            "record",
+            "record"
+          ]
+        },
+        {
+          "kind": "tools.args",
+          "contains": [
+            {
+              "value": "QUEUED-TOOL"
+            },
+            {
+              "value": "QUEUED-TOOL-2"
+            }
+          ]
+        },
+        {
+          "kind": "status",
+          "equals": "idle"
+        }
+      ]
+    },
+    {
+      "id": "term-01-soft-terminate",
+      "agent": "probe",
+      "requirements": [
+        "S10-1"
+      ],
+      "why": "terminate() stamps the thread, aborts in-flight work, and rejects later sends; nothing calls execute again.",
+      "ops": [
+        {
+          "send": "[[tool:slow {\"ms\":500}]] START",
+          "async": true
+        },
+        {
+          "terminate": true
+        },
+        {
+          "expectRejected": {
+            "op": "send",
+            "value": "too-late"
+          }
+        },
+        {
+          "settle": true
+        }
+      ],
+      "expect": [
+        {
+          "kind": "terminated",
+          "notEquals": null
+        },
+        {
+          "kind": "rejected",
+          "equals": true
+        },
+        {
+          "kind": "model.calls",
+          "equals": 1
+        }
+      ]
+    }
+  ]
+}

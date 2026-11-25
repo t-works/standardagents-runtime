@@ -3,3 +3,7 @@ node_modules/
 dist/
 *.tgz
 /.idea/
+
+# eval run artefacts
+/evals/results/runs/
+/evals/results/baseline-*.json

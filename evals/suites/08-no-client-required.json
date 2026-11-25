@@ -1,0 +1,171 @@
+{
+  "suite": "no-client-required",
+  "about": "Client-API-adjacent requirements that need no HTTP or WebSocket client: a store restart, two deliberately broken packages read through the loader, a vision-capable model, and two prompt-backed sides. `api-10` stays manual because it reads the ADR that documents the sandbox limit, not a runtime surface.",
+  "cases": [
+    {
+      "id": "api-06-eviction-queue-durable",
+      "agent": "probe",
+      "requirements": [
+        "S9-2"
+      ],
+      "why": "Queued entries live in the store, not the process: a fresh Runtime over the same store still sees both, in order. No resume claim — the spec is silent on how an evicted object wakes.",
+      "ops": [
+        { "createThread": true },
+        { "queueMessage": { "role": "user", "content": "QUEUED-ONE", "trigger": false } },
+        { "queueMessage": { "role": "user", "content": "QUEUED-TWO", "trigger": false } },
+        { "restart": true }
+      ],
+      "expect": [
+        {
+          "kind": "queue",
+          "equals": [
+            { "kind": "message", "role": "user", "content": "QUEUED-ONE", "side": "a" },
+            { "kind": "message", "role": "user", "content": "QUEUED-TWO", "side": "a" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "api-08-attachment-parts",
+      "agent": "vision_probe",
+      "requirements": [
+        "S4-6"
+      ],
+      "why": "With a model that declares image support, an image attachment reaches the provider as an image part and stays an attachment on the persisted message.",
+      "ops": [
+        { "createThread": true },
+        {
+          "queueMessage": {
+            "role": "user",
+            "content": "LOOK",
+            "attachments": [
+              {
+                "name": "probe.png",
+                "mimeType": "image/png",
+                "data": "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg=="
+              }
+            ]
+          }
+        },
+        { "settle": true }
+      ],
+      "expect": [
+        {
+          "kind": "model.requests",
+          "index": 0,
+          "field": "parts",
+          "contains": [
+            { "type": "text", "text": "LOOK" },
+            { "type": "image", "mediaType": "image/png" }
+          ]
+        },
+        {
+          "kind": "messages.attachments",
+          "length": 1
+        },
+        {
+          "kind": "messages.attachments",
+          "index": 0,
+          "field": "mimeType",
+          "equals": "image/png"
+        },
+        {
+          "kind": "messages.attachments",
+          "index": 0,
+          "field": "name",
+          "contains": "probe.png"
+        }
+      ]
+    },
+    {
+      "id": "api-09-parent-hook-missing",
+      "agent": "orchestrator",
+      "requirements": [
+        "S7.3.1-1"
+      ],
+      "why": "A child requiring a hook id nothing defines makes the parent package unloadable instead of silently hookless.",
+      "load": "fixtures-broken/hook-missing",
+      "expect": [
+        { "kind": "load.issues", "length": 1 },
+        { "kind": "load.issues", "index": 0, "field": "severity", "equals": "error" },
+        { "kind": "load.issues", "index": 0, "field": "message", "contains": "is not available" }
+      ]
+    },
+    {
+      "id": "api-09-parent-hook-user-scoped",
+      "agent": "orchestrator",
+      "requirements": [
+        "S7.3.1-1"
+      ],
+      "why": "A user-scope hook id resolves but can never compose onto a parent, so the load must fail closed (factory/bugs/parent-hook-user-scope-skipped.md).",
+      "load": "fixtures-broken/hook-user-scoped",
+      "expect": [
+        { "kind": "load.issues", "length": 1 },
+        { "kind": "load.issues", "index": 0, "field": "severity", "equals": "error" },
+        { "kind": "load.issues", "index": 0, "field": "message", "contains": "user-scoped" }
+      ]
+    },
+    {
+      "id": "api-10-sandbox-documentation",
+      "automated": false,
+      "agent": "probe",
+      "requirements": [
+        "S14.4-2",
+        "S14.4-3"
+      ],
+      "manual": "Read `factory/rules/ADRs/code-execution-resource-limits-and-termination.md`, section \"This runtime\", and confirm it states the default memory limit, the platform ceiling, and that over-ceiling requests clamp rather than reject, naming the effective limit."
+    },
+    {
+      "id": "api-11-perspective-mapping",
+      "agent": "dual_agent",
+      "requirements": [
+        "S4-5"
+      ],
+      "why": "Both sides are prompt-backed, so the same history is rendered twice: side A shows its own tool call as an assistant turn, side B sees side A's turn as a user message with no call at all.",
+      "ops": [
+        { "send": "[[once]][[tool:record {\"value\":\"A-CALL\"}]] SEED" }
+      ],
+      "expect": [
+        { "kind": "model.views", "index": 1, "field": "side", "equals": "b" },
+        {
+          "kind": "model.views",
+          "index": 1,
+          "field": "messages",
+          "equals": [
+            { "role": "system" },
+            { "role": "assistant" }
+          ]
+        },
+        {
+          "kind": "model.views",
+          "index": 2,
+          "field": "messages",
+          "equals": [
+            { "role": "system" },
+            { "role": "user" },
+            { "role": "assistant", "toolCalls": ["record"] },
+            { "role": "tool" },
+            { "role": "user" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "api-12-session-turn-cap",
+      "agent": "dual_agent",
+      "requirements": [
+        "S6-1",
+        "S10-2"
+      ],
+      "why": "With two prompt-backed sides and no stop condition, the turn cap alone ends the session: four alternations, then idle, and the thread is not terminated.",
+      "ops": [
+        { "send": "EXCHANGE" }
+      ],
+      "expect": [
+        { "kind": "model.calls", "equals": 4 },
+        { "kind": "status", "equals": "idle" },
+        { "kind": "terminated", "equals": null }
+      ]
+    }
+  ]
+}

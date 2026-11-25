@@ -1,0 +1,64 @@
+{
+  "suite": "client-api-and-streams",
+  "automated": false,
+  "about": "Requirements that need a running runtime with an HTTP or WebSocket client. Each case lists the observable check; none can be judged from a fixture run alone.",
+  "cases": [
+    {
+      "id": "api-01-routes-auth-owner",
+      "agent": "probe",
+      "requirements": [
+        "S15-0",
+        "S15-1",
+        "S15-2",
+        "S15-3",
+        "S15-4",
+        "S15-5"
+      ],
+      "manual": "Against a running runtime: every specified route answers under the prefix; an unauthenticated call is rejected; a bad token is rejected; internal failure returns 5xx not 4xx; a created thread owner equals the caller; POST message returns before a slow execution finishes and the message survives a restart."
+    },
+    {
+      "id": "api-02-stream-frames",
+      "agent": "probe",
+      "requirements": [
+        "S15-6",
+        "S15-7",
+        "S15-11",
+        "S15-12"
+      ],
+      "manual": "Connect the WebSocket: first frame is thread_status; it repeats on every status change; message_data, message_chunk, and event frames appear for their triggers; depth and includeSilent filters drop the right frames; stream_ping gets stream_pong."
+    },
+    {
+      "id": "api-03-reasoning",
+      "agent": "probe",
+      "requirements": [
+        "S15-8",
+        "S15-9"
+      ],
+      "manual": "With a model that returns reasoning: a connection without the reasoning opt-in receives no reasoning_chunk frames; the reasoning is persisted and returned on message reads and on an opted-in stream."
+    },
+    {
+      "id": "api-04-deletion-cascade",
+      "agent": "orchestrator",
+      "requirements": [
+        "S15-10"
+      ],
+      "manual": "Delete a parent thread with a running child: new work is refused for both threads, in-flight work is aborted, child streams close, and the delete response arrives only after that."
+    },
+    {
+      "id": "api-05-bootstrap-endpoints",
+      "agent": "orchestrator",
+      "requirements": [
+        "S7.5-1"
+      ],
+      "manual": "Create a child whose scoped variables are unset: the create returns a structured bootstrap error with a request id; GET returns the pending requirement; POST stores values and boots the deferred child."
+    },
+    {
+      "id": "api-07-runtime-streams",
+      "agent": "probe",
+      "requirements": [
+        "S13-1"
+      ],
+      "manual": "If runtime streams are implemented: open a stream on the execution host, confirm no thread park occurs, and confirm disconnect terminates the stream. Runtimes without streams are conforming."
+    }
+  ]
+}

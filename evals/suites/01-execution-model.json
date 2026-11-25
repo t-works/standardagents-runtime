@@ -1,0 +1,362 @@
+{
+  "suite": "execution-model",
+  "about": "Step cycle, context assembly, injection, handler turns, decisions, and per-thread serialization.",
+  "cases": [
+    {
+      "id": "exec-01-step-cycle",
+      "agent": "probe",
+      "requirements": [
+        "S3-1",
+        "S1-1",
+        "S1-2",
+        "S5.1-1",
+        "S4-1",
+        "S4-2"
+      ],
+      "why": "One prompt turn: tools run in returned order, results persist, a second turn answers, and the assembly hook order is fixed.",
+      "ops": [
+        {
+          "send": "[[once]][[tool:record {\"value\":\"a\"}]][[tool:record {\"value\":\"b\"}]]"
+        }
+      ],
+      "expect": [
+        {
+          "kind": "hooks.order",
+          "equals": [
+            "pipeline_after_system",
+            "pipeline_filter_messages",
+            "pipeline_prefilter",
+            "pipeline_after_system",
+            "pipeline_filter_messages",
+            "pipeline_prefilter"
+          ]
+        },
+        {
+          "kind": "tools.order",
+          "equals": [
+            "record",
+            "record"
+          ]
+        },
+        {
+          "kind": "tools.args",
+          "equals": [
+            {
+              "value": "a"
+            },
+            {
+              "value": "b"
+            }
+          ]
+        },
+        {
+          "kind": "tools.status",
+          "equals": [
+            "success",
+            "success"
+          ]
+        },
+        {
+          "kind": "messages.roles",
+          "equals": [
+            "user",
+            "assistant",
+            "tool",
+            "tool",
+            "assistant"
+          ]
+        },
+        {
+          "kind": "model.calls",
+          "equals": 2
+        },
+        {
+          "kind": "status",
+          "equals": "idle"
+        },
+        {
+          "kind": "terminated",
+          "equals": null
+        }
+      ]
+    },
+    {
+      "id": "exec-02-tool-error-persisted",
+      "agent": "probe",
+      "requirements": [
+        "S5.2-1",
+        "S5.1-1",
+        "S1-2"
+      ],
+      "why": "A throwing tool becomes an error tool result; the loop continues with the next call in the same step.",
+      "ops": [
+        {
+          "send": "[[once]][[tool:boom {\"message\":\"probe-boom\"}]][[tool:record {\"value\":\"after\"}]]"
+        }
+      ],
+      "expect": [
+        {
+          "kind": "tools.order",
+          "equals": [
+            "boom",
+            "record"
+          ]
+        },
+        {
+          "kind": "tools.status",
+          "equals": [
+            "error",
+            "success"
+          ]
+        },
+        {
+          "kind": "messages.contains",
+          "contains": [
+            "probe-boom"
+          ]
+        },
+        {
+          "kind": "messages.roles",
+          "equals": [
+            "user",
+            "assistant",
+            "tool",
+            "tool",
+            "assistant"
+          ]
+        },
+        {
+          "kind": "model.calls",
+          "equals": 2
+        },
+        {
+          "kind": "status",
+          "equals": "idle"
+        }
+      ]
+    },
+    {
+      "id": "exec-03-injected-after-snapshot",
+      "agent": "probe",
+      "requirements": [
+        "S4-2",
+        "S4-3",
+        "S4-4"
+      ],
+      "why": "Messages injected during tool execution are absent from the request already being built and present in the next one; silent does not change eligibility.",
+      "ops": [
+        {
+          "send": "[[once]][[tool:inject {\"content\":\"LATE-INJECT\"}]][[tool:inject {\"content\":\"SILENT-INJECT\",\"silent\":true}]]"
+        }
+      ],
+      "expect": [
+        {
+          "kind": "model.requests",
+          "index": 0,
+          "field": "users",
+          "notContains": [
+            "LATE-INJECT",
+            "SILENT-INJECT"
+          ]
+        },
+        {
+          "kind": "model.requests",
+          "index": 1,
+          "field": "users",
+          "contains": [
+            "LATE-INJECT",
+            "SILENT-INJECT"
+          ]
+        },
+        {
+          "kind": "model.calls",
+          "equals": 2
+        },
+        {
+          "kind": "status",
+          "equals": "idle"
+        }
+      ]
+    },
+    {
+      "id": "exec-04-handler-single-turn",
+      "agent": "handler_probe",
+      "requirements": [
+        "S3-2",
+        "S1-1"
+      ],
+      "why": "A handler-backed side runs exactly one handler invocation and never calls a model.",
+      "ops": [
+        {
+          "send": "hello"
+        }
+      ],
+      "expect": [
+        {
+          "kind": "model.calls",
+          "equals": 0
+        },
+        {
+          "kind": "messages.roles",
+          "equals": [
+            "user",
+            "assistant"
+          ]
+        },
+        {
+          "kind": "messages.contains",
+          "contains": [
+            "handler:hello"
+          ]
+        },
+        {
+          "kind": "values",
+          "equals": {
+            "handler.turns": 1,
+            "handler.lastContent": "hello"
+          }
+        },
+        {
+          "kind": "status",
+          "oneOf": [
+            "idle",
+            "awaiting_human"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "exec-05-serialized-flow",
+      "agent": "probe",
+      "requirements": [
+        "S11-1",
+        "S2-2",
+        "S1-4"
+      ],
+      "why": "A second message sent while a slow tool runs is queued; tool calls never overlap on one thread.",
+      "ops": [
+        {
+          "send": "[[tool:slow {\"ms\":250}]]",
+          "async": true
+        },
+        {
+          "send": "[[once]][[tool:record {\"value\":\"second\"}]]"
+        }
+      ],
+      "expect": [
+        {
+          "kind": "tools.maxConcurrent",
+          "equals": 1
+        },
+        {
+          "kind": "tools.order",
+          "contains": [
+            "slow",
+            "record"
+          ]
+        },
+        {
+          "kind": "tools.args",
+          "contains": [
+            {
+              "value": "second"
+            }
+          ]
+        },
+        {
+          "kind": "model.calls",
+          "atLeast": 2
+        },
+        {
+          "kind": "status",
+          "equals": "idle"
+        }
+      ]
+    },
+    {
+      "id": "exec-06-effect-and-decision",
+      "agent": "probe",
+      "requirements": [
+        "S2-1",
+        "S1.1-1",
+        "S1-3"
+      ],
+      "why": "A scheduled effect fires while the thread is idle; decide() works with state.execution null.",
+      "ops": [
+        {
+          "scheduleEffect": {
+            "name": "tick",
+            "delay": 0
+          }
+        },
+        {
+          "scheduleEffect": {
+            "name": "decide_tick",
+            "delay": 0
+          }
+        },
+        {
+          "settle": true
+        }
+      ],
+      "expect": [
+        {
+          "kind": "effects",
+          "contains": [
+            "tick",
+            "decide_tick"
+          ]
+        },
+        {
+          "kind": "values",
+          "equals": {
+            "decisions.log": [
+              {
+                "executionIsNull": true,
+                "probability": 1
+              }
+            ]
+          }
+        },
+        {
+          "kind": "model.calls",
+          "equals": 0
+        },
+        {
+          "kind": "status",
+          "equals": "idle"
+        }
+      ]
+    },
+    {
+      "id": "exec-07-human-turn-parks",
+      "agent": "probe",
+      "requirements": [
+        "S3-3"
+      ],
+      "why": "After side A replies, a human-backed thread parks instead of running another side A turn.",
+      "ops": [
+        {
+          "send": "Say hello."
+        }
+      ],
+      "expect": [
+        {
+          "kind": "model.calls",
+          "equals": 1
+        },
+        {
+          "kind": "status",
+          "oneOf": [
+            "awaiting_human",
+            "idle"
+          ]
+        },
+        {
+          "kind": "terminated",
+          "equals": null
+        }
+      ]
+    }
+  ]
+}

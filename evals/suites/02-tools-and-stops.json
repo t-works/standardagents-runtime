@@ -1,0 +1,180 @@
+{
+  "suite": "tools-and-stops",
+  "about": "Tool classes and the fixed stop-condition precedence.",
+  "cases": [
+    {
+      "id": "stop-01-stoptool-precedes-response",
+      "agent": "probe",
+      "requirements": [
+        "S6-1",
+        "S1-3"
+      ],
+      "why": "stopTool fires at the end of the step, so the model is not called again even though stopOnResponse is also configured.",
+      "ops": [
+        {
+          "send": "[[tool:record {\"value\":\"before\"}]][[tool:stop_now {}]]"
+        }
+      ],
+      "expect": [
+        {
+          "kind": "model.calls",
+          "equals": 1
+        },
+        {
+          "kind": "tools.order",
+          "equals": [
+            "record",
+            "stop_now"
+          ]
+        },
+        {
+          "kind": "status",
+          "equals": "idle"
+        },
+        {
+          "kind": "terminated",
+          "equals": null
+        }
+      ]
+    },
+    {
+      "id": "stop-02-stop-on-response",
+      "agent": "probe",
+      "requirements": [
+        "S6-1",
+        "S1-3"
+      ],
+      "why": "A text-only assistant response ends the session under stopOnResponse.",
+      "ops": [
+        {
+          "send": "plain-text"
+        }
+      ],
+      "expect": [
+        {
+          "kind": "model.calls",
+          "equals": 1
+        },
+        {
+          "kind": "status",
+          "equals": "idle"
+        },
+        {
+          "kind": "terminated",
+          "equals": null
+        }
+      ]
+    },
+    {
+      "id": "stop-03-max-steps",
+      "agent": "probe_limits",
+      "requirements": [
+        "S6-1",
+        "S1-3",
+        "S10-2"
+      ],
+      "why": "Without a response stop, replaying tool calls stop at maxSteps; the thread is not terminated.",
+      "ops": [
+        {
+          "send": "[[tool:record {\"value\":\"loop\"}]]"
+        }
+      ],
+      "expect": [
+        {
+          "kind": "model.calls",
+          "equals": 2
+        },
+        {
+          "kind": "tools.order",
+          "equals": [
+            "record",
+            "record"
+          ]
+        },
+        {
+          "kind": "status",
+          "equals": "idle"
+        },
+        {
+          "kind": "terminated",
+          "equals": null
+        }
+      ]
+    },
+    {
+      "id": "stop-05-session-stop-tool",
+      "agent": "probe",
+      "requirements": [
+        "S6-1",
+        "S8.3-2"
+      ],
+      "why": "The bound sessionStop tool takes precedence over every other stop and ends the session without terminating the thread.",
+      "ops": [
+        {
+          "send": "[[tool:session_stop {\"result\":\"probe-done\"}]]"
+        }
+      ],
+      "expect": [
+        {
+          "kind": "model.calls",
+          "equals": 1
+        },
+        {
+          "kind": "status",
+          "equals": "idle"
+        },
+        {
+          "kind": "terminated",
+          "equals": null
+        }
+      ]
+    },
+    {
+      "id": "tools-01-tool-classes",
+      "agent": "orchestrator",
+      "requirements": [
+        "S5.3-1",
+        "S7.2-1",
+        "S7.3-3",
+        "S7.3-1"
+      ],
+      "why": "One tool list carries function tools, a prompt tool, an agent handoff tool, and lifecycle tools; the hidden relationship appears nowhere in it.",
+      "ops": [
+        {
+          "send": "plain-text"
+        }
+      ],
+      "expect": [
+        {
+          "kind": "model.requests",
+          "index": 0,
+          "field": "tools",
+          "contains": [
+            "record",
+            "summarize",
+            "handler_probe",
+            "subagents",
+            "subagent_create",
+            "subagent_message"
+          ]
+        },
+        {
+          "kind": "model.requests",
+          "index": 0,
+          "field": "toolDetail",
+          "notContains": [
+            "hidden_leaf"
+          ]
+        },
+        {
+          "kind": "model.calls",
+          "equals": 1
+        },
+        {
+          "kind": "status",
+          "equals": "idle"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,582 @@
+{
+  "suite": "subagents",
+  "about": "Parent/child linkage, lifecycle tooling, relationship flags, payload mapping, attachments, reporting, and parent-hook composition.",
+  "cases": [
+    {
+      "id": "sub-01-immediate-at-creation",
+      "agent": "orchestrator",
+      "requirements": [
+        "S7.3-2",
+        "S7.1-1",
+        "S2-1"
+      ],
+      "why": "immediate relationships spawn at thread creation, before any turn, including the immediate-object form.",
+      "env": {
+        "LEAF_NAME": "probe-leaf",
+        "LEAF_SECRET": "s3cret-not-for-model"
+      },
+      "ops": [
+        {
+          "createThread": true
+        },
+        {
+          "settle": true
+        }
+      ],
+      "expect": [
+        {
+          "kind": "children",
+          "length": 2
+        },
+        {
+          "kind": "children",
+          "contains": [
+            {
+              "relationship": "immediate_leaf",
+              "name": "leaf"
+            },
+            {
+              "relationship": "env_leaf",
+              "name": "leaf"
+            }
+          ]
+        },
+        {
+          "kind": "model.calls",
+          "equals": 0
+        },
+        {
+          "kind": "status",
+          "equals": "idle"
+        }
+      ]
+    },
+    {
+      "id": "sub-02-create-and-registry",
+      "agent": "orchestrator",
+      "requirements": [
+        "S7.1-1",
+        "S7.2-1",
+        "S7.4-1",
+        "S7.4-2"
+      ],
+      "why": "subagent_create returns a child with parent linkage and a registry entry keyed by the relationship name.",
+      "ops": [
+        {
+          "send": "[[once]][[tool:subagent_create {\"agent\":\"worker\",\"name\":\"w1\",\"arguments\":{\"task\":\"do-one\"}}]]"
+        },
+        {
+          "settle": true
+        }
+      ],
+      "expect": [
+        {
+          "kind": "children",
+          "contains": [
+            {
+              "relationship": "worker",
+              "name": "worker"
+            }
+          ]
+        },
+        {
+          "kind": "tools.status",
+          "equals": [
+            "success"
+          ]
+        },
+        {
+          "kind": "messages.contains",
+          "contains": [
+            "Started w1"
+          ]
+        },
+        {
+          "kind": "status",
+          "equals": "idle"
+        }
+      ]
+    },
+    {
+      "id": "sub-03-create-name-required",
+      "agent": "orchestrator",
+      "requirements": [
+        "S7.4-2"
+      ],
+      "why": "Creation without a non-empty name fails as a tool error, not a crash.",
+      "ops": [
+        {
+          "send": "[[once]][[tool:subagent_create {\"agent\":\"worker\",\"arguments\":{\"task\":\"no-name\"}}]]"
+        }
+      ],
+      "expect": [
+        {
+          "kind": "tools.status",
+          "equals": [
+            "error"
+          ]
+        },
+        {
+          "kind": "tools.results",
+          "index": 0,
+          "contains": "name"
+        },
+        {
+          "kind": "status",
+          "equals": "idle"
+        }
+      ]
+    },
+    {
+      "id": "sub-04-max-instances",
+      "agent": "cap_probe",
+      "requirements": [
+        "S7.2-2"
+      ],
+      "why": "A third instance beyond maxInstances returns an actionable tool error.",
+      "ops": [
+        {
+          "send": "[[once]][[tool:subagent_create {\"agent\":\"limited_worker\",\"name\":\"l1\",\"arguments\":{\"task\":\"one\"}}]][[tool:subagent_create {\"agent\":\"limited_worker\",\"name\":\"l2\",\"arguments\":{\"task\":\"two\"}}]][[tool:subagent_create {\"agent\":\"limited_worker\",\"name\":\"l3\",\"arguments\":{\"task\":\"three\"}}]]"
+        },
+        {
+          "settle": true
+        }
+      ],
+      "expect": [
+        {
+          "kind": "tools.status",
+          "equals": [
+            "success",
+            "success",
+            "error"
+          ]
+        },
+        {
+          "kind": "tools.results",
+          "index": 2,
+          "contains": "maxInstances"
+        },
+        {
+          "kind": "children",
+          "length": 2
+        }
+      ]
+    },
+    {
+      "id": "sub-05-arguments-interpolated",
+      "agent": "orchestrator",
+      "requirements": [
+        "S7.4-4"
+      ],
+      "why": "Initial arguments reach the child prompt as top-level interpolation variables.",
+      "ops": [
+        {
+          "send": "[[once]][[tool:subagent_create {\"agent\":\"worker\",\"name\":\"w1\",\"arguments\":{\"task\":\"do-one\"}}]]"
+        },
+        {
+          "settle": true
+        }
+      ],
+      "expect": [
+        {
+          "kind": "values",
+          "thread": "child:worker",
+          "field": "system.current",
+          "contains": [
+            "do-one"
+          ]
+        },
+        {
+          "kind": "status",
+          "equals": "idle"
+        }
+      ]
+    },
+    {
+      "id": "sub-06-arguments-required",
+      "agent": "orchestrator",
+      "requirements": [
+        "S7.4-3"
+      ],
+      "why": "Arguments missing a side A required field are rejected as a tool error.",
+      "ops": [
+        {
+          "send": "[[once]][[tool:subagent_create {\"agent\":\"worker\",\"name\":\"w1\",\"arguments\":{}}]]"
+        }
+      ],
+      "expect": [
+        {
+          "kind": "tools.status",
+          "equals": [
+            "error"
+          ]
+        },
+        {
+          "kind": "tools.results",
+          "index": 0,
+          "contains": "task"
+        }
+      ]
+    },
+    {
+      "id": "sub-07-attachments-parent-to-child",
+      "agent": "orchestrator",
+      "requirements": [
+        "S8.1-1",
+        "S7.4-1"
+      ],
+      "why": "A referenced attachment is copied into the child filesystem and is readable there.",
+      "ops": [
+        {
+          "send": "[[once]][[tool:drop_file {\"path\":\"shared.txt\"}]][[tool:subagent_create {\"agent\":\"worker\",\"name\":\"w1\",\"arguments\":{\"task\":\"[[once]][[tool:file_probe {\\\"path\\\":\\\"shared.txt\\\"}]]\",\"attachments\":[\"shared.txt\"]}}]]"
+        },
+        {
+          "settle": true
+        }
+      ],
+      "expect": [
+        {
+          "kind": "tools.status",
+          "equals": [
+            "success",
+            "success"
+          ]
+        },
+        {
+          "kind": "tools.results",
+          "thread": "child:worker",
+          "index": 0,
+          "contains": "\"exists\":true"
+        }
+      ]
+    },
+    {
+      "id": "sub-07b-attachments-without-initial-message",
+      "agent": "orchestrator",
+      "requirements": [
+        "S8.1-1",
+        "S7.4-1"
+      ],
+      "why": "A blocking relationship that maps no message property still copies the declared attachment: the JSON arguments it queues carry the child-local path (factory/bugs/attachment-dropped-when-initial-message-empty.md).",
+      "ops": [
+        {
+          "send": "[[once]][[tool:drop_file {\"path\":\"shared.txt\"}]][[tool:subagent_create {\"agent\":\"blocking_worker\",\"name\":\"bw\",\"arguments\":{\"task\":\"\",\"attachments\":[\"shared.txt\"]}}]]"
+        },
+        {
+          "settle": true
+        }
+      ],
+      "expect": [
+        {
+          "kind": "messages.contents",
+          "thread": "child:blocking_worker",
+          "index": 0,
+          "contains": "shared.txt"
+        },
+        {
+          "kind": "messages.attachments",
+          "thread": "child:blocking_worker",
+          "length": 1
+        },
+        {
+          "kind": "messages.attachments",
+          "thread": "child:blocking_worker",
+          "index": 0,
+          "field": "path",
+          "equals": "/shared.txt"
+        }
+      ]
+    },
+    {
+      "id": "sub-07c-later-message-attachments",
+      "agent": "orchestrator",
+      "requirements": [
+        "S8.1-1"
+      ],
+      "why": "subagent_message names parent files, the child gets them copied in and reads one (factory/bugs/attachment-dropped-when-initial-message-empty.md).",
+      "ops": [
+        {
+          "send": "[[once]][[tool:drop_file {\"path\":\"shared.txt\"}]][[tool:subagent_create {\"agent\":\"quiet_worker\",\"name\":\"q1\",\"arguments\":{\"task\":\"first\"}}]]"
+        },
+        {
+          "send": "[[once]][[tool:subagent_message {\"agent\":\"quiet_worker\",\"message\":\"[[once]][[tool:file_probe {\\\"path\\\":\\\"shared.txt\\\"}]]\",\"attachments\":[\"shared.txt\"]}]]"
+        },
+        {
+          "settle": true
+        }
+      ],
+      "expect": [
+        {
+          "kind": "messages.attachments",
+          "thread": "child:quiet_worker",
+          "length": 1
+        },
+        {
+          "kind": "tools.results",
+          "thread": "child:quiet_worker",
+          "index": 0,
+          "contains": "\"exists\":true"
+        }
+      ]
+    },
+    {
+      "id": "sub-08-child-to-parent-implicit",
+      "agent": "orchestrator",
+      "requirements": [
+        "S8.2-1",
+        "S7.2.1-1"
+      ],
+      "why": "Under the default implicit mode a child sessionStop becomes a parent queued message carrying the result text.",
+      "ops": [
+        {
+          "send": "[[once]][[tool:subagent_create {\"agent\":\"worker\",\"name\":\"w1\",\"arguments\":{\"task\":\"[[once]][[tool:session_stop {\\\"result\\\":\\\"worker-report\\\"}]]\"}}]]"
+        },
+        {
+          "settle": true
+        }
+      ],
+      "expect": [
+        {
+          "kind": "messages.contains",
+          "contains": [
+            "worker-report"
+          ]
+        },
+        {
+          "kind": "children",
+          "contains": [
+            {
+              "relationship": "worker"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sub-09-explicit-no-wake",
+      "agent": "orchestrator",
+      "requirements": [
+        "S7.2.1-1",
+        "S10-2"
+      ],
+      "why": "An explicit child does not auto-queue completion and does not wake the parent: the parent history stays the four messages of its own turn, since a delivered report would add a user message and a parent turn after it.",
+      "ops": [
+        {
+          "send": "[[once]][[tool:subagent_create {\"agent\":\"quiet_worker\",\"name\":\"q1\",\"arguments\":{\"task\":\"[[once]][[tool:session_stop {\\\"result\\\":\\\"quiet-report\\\"}]]\"}}]]"
+        },
+        {
+          "settle": true
+        }
+      ],
+      "expect": [
+        {
+          "kind": "messages.roles",
+          "equals": [
+            "user",
+            "assistant",
+            "tool",
+            "assistant"
+          ]
+        },
+        {
+          "kind": "children",
+          "contains": [
+            {
+              "relationship": "quiet_worker"
+            }
+          ]
+        },
+        {
+          "kind": "status",
+          "equals": "idle"
+        }
+      ]
+    },
+    {
+      "id": "sub-10-status-without-termination",
+      "agent": "orchestrator",
+      "requirements": [
+        "S8.3-1",
+        "S8.2-2"
+      ],
+      "why": "setStatus updates the parent registry without terminating the child; the child keeps running and later runtime status writes may overwrite the custom text.",
+      "ops": [
+        {
+          "send": "[[once]][[tool:subagent_create {\"agent\":\"worker\",\"name\":\"w1\",\"arguments\":{\"task\":\"[[once]][[tool:escalate {}]]\"}}]]"
+        },
+        {
+          "settle": true
+        }
+      ],
+      "expect": [
+        {
+          "kind": "children",
+          "contains": [
+            {
+              "relationship": "worker"
+            }
+          ]
+        },
+        {
+          "kind": "tools.status",
+          "thread": "child:worker",
+          "equals": [
+            "success"
+          ]
+        },
+        {
+          "kind": "terminated",
+          "thread": "child:worker",
+          "equals": null
+        }
+      ]
+    },
+    {
+      "id": "sub-11-parent-hook-order",
+      "agent": "orchestrator",
+      "requirements": [
+        "S7.3.1-2",
+        "S7.3.1-1"
+      ],
+      "why": "Within one hook position: child before_parent hooks, then the parent set, then child after_parent hooks.",
+      "ops": [
+        {
+          "send": "plain-text"
+        }
+      ],
+      "expect": [
+        {
+          "kind": "hooks.order",
+          "name": "after_system_message",
+          "equals": [
+            "parent_probe_before",
+            "pipeline_after_system",
+            "parent_own",
+            "parent_probe_after"
+          ]
+        },
+        {
+          "kind": "model.calls",
+          "equals": 1
+        }
+      ]
+    },
+    {
+      "id": "sub-12-scoped-env-runtime-only",
+      "agent": "orchestrator",
+      "requirements": [
+        "S7.3-4"
+      ],
+      "why": "scopedEnv reaches the child as runtime env but never appears in the child's prompt text.",
+      "env": {
+        "LEAF_NAME": "probe-leaf",
+        "LEAF_SECRET": "s3cret-not-for-model"
+      },
+      "ops": [
+        {
+          "send": "[[once]][[tool:subagent_message {\"agent\":\"env_leaf\",\"message\":\"[[once]][[tool:state_probe {\\\"env\\\":[\\\"LEAF_SECRET\\\"]}]]\"}]]"
+        },
+        {
+          "settle": true
+        }
+      ],
+      "expect": [
+        {
+          "kind": "values",
+          "thread": "child:env_leaf",
+          "field": "system.current",
+          "notContains": [
+            "s3cret-not-for-model"
+          ]
+        },
+        {
+          "kind": "values",
+          "thread": "child:env_leaf",
+          "field": "state.env",
+          "equals": {
+            "LEAF_SECRET": "s3cret-not-for-model"
+          }
+        }
+      ]
+    },
+    {
+      "id": "sub-13-immediate-recursive",
+      "agent": "orchestrator",
+      "requirements": [
+        "S7.3-5"
+      ],
+      "why": "An immediate child that itself declares an immediate relationship spawns its own child on creation.",
+      "ops": [
+        {
+          "send": "[[once]][[tool:subagent_create {\"agent\":\"worker\",\"name\":\"w1\",\"arguments\":{\"task\":\"[[once]][[tool:state_probe {}]]\"}}]]"
+        },
+        {
+          "settle": true
+        }
+      ],
+      "expect": [
+        {
+          "kind": "tools.results",
+          "thread": "child:worker",
+          "index": 0,
+          "contains": "worker_leaf"
+        }
+      ]
+    },
+    {
+      "id": "sub-14-escalate-without-parent",
+      "agent": "probe",
+      "requirements": [
+        "S8.2-3"
+      ],
+      "why": "notifyParent and setStatus on a parentless thread are silent no-ops.",
+      "ops": [
+        {
+          "send": "[[once]][[tool:escalate {}]]"
+        }
+      ],
+      "expect": [
+        {
+          "kind": "tools.status",
+          "equals": [
+            "success"
+          ]
+        },
+        {
+          "kind": "status",
+          "equals": "idle"
+        },
+        {
+          "kind": "terminated",
+          "equals": null
+        }
+      ]
+    },
+    {
+      "id": "sub-15-optional-flag-on",
+      "agent": "orchestrator",
+      "requirements": [
+        "S7.3-1"
+      ],
+      "why": "The optional relationship activates when its env flag resolves to yes.",
+      "env": {
+        "OPTIONAL_LEAF": "yes"
+      },
+      "ops": [
+        {
+          "send": "plain-text"
+        }
+      ],
+      "expect": [
+        {
+          "kind": "model.requests",
+          "index": 0,
+          "field": "toolDetail",
+          "contains": [
+            "optional_leaf"
+          ]
+        }
+      ]
+    }
+  ]
+}
