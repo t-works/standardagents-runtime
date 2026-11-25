@@ -14,6 +14,7 @@ import type {
   PromptDefinition,
   PromptSide,
   ProviderConfigSlots,
+  ProviderFactory,
   ProviderMessage,
   ProviderRequest,
   ProviderResponse,
@@ -53,6 +54,15 @@ export interface RuntimeOptions {
   maxTotalSteps?: number;
   /** Retries for retryable provider errors, per model. */
   providerRetries?: number;
+  /**
+   * Supplies a provider factory for a model the registry only names.
+   *
+   * A package should not have to carry a vendor dependency and a key: the model a
+   * workflow asks for is the package's, the connection to it is the host's. Called
+   * once per model name, before the registry's own `provider` is used, and it may
+   * answer `undefined` for models it does not know.
+   */
+  hostProviders?: (name: string) => ProviderFactory | undefined;
 }
 
 interface ToolSpec {
@@ -132,6 +142,7 @@ export class Runtime implements RuntimeLike {
   private readonly runs = new Set<Promise<void>>();
   private readonly timers = new Map<string, NodeJS.Timeout>();
   private readonly providers = new Map<string, ReturnType<ModelDefinition['provider']>>();
+  private readonly hostProviders: ((name: string) => ProviderFactory | undefined) | undefined;
   private readonly toolCallStack: Array<{ uses?: readonly string[] }> = [];
 
   constructor(options: RuntimeOptions) {
@@ -142,6 +153,7 @@ export class Runtime implements RuntimeLike {
     this.maxTotalSteps = options.maxTotalSteps ?? 200;
     this.providerRetries = options.providerRetries ?? 2;
     this.envLookup = options.instanceEnv ?? ((name) => process.env[name]);
+    this.hostProviders = options.hostProviders;
   }
 
   // ── RuntimeLike ─────────────────────────────────────────────────────────
@@ -281,10 +293,18 @@ export class Runtime implements RuntimeLike {
   async providerFor(thread: Thread, model: ModelDefinition): Promise<ReturnType<ModelDefinition['provider']>> {
     const cached = this.providers.get(model.name);
     if (cached) return cached;
-    const factory = model.provider as unknown as {
+    // The host's answer wins: a package that only names its model is a package
+    // that runs wherever the host has a key, which is the portability it was
+    // loaded for. The registry's own factory is the fallback, not the rule.
+    const factory = (this.hostProviders?.(model.name) ?? model.provider) as unknown as {
       (config: Record<string, unknown>, context?: { state?: ThreadState }): ReturnType<ModelDefinition['provider']>;
       configSlots?: ProviderConfigSlots;
     };
+    if (typeof factory !== 'function') {
+      throw new Error(
+        `Model '${model.name}' has no provider factory and the host supplied none: define one in the package (models/) or pass one to RuntimeOptions.hostProviders`,
+      );
+    }
     const config = await this.providerConfig(thread, `Model '${model.name}'`, factory);
     if (config.apiKey === undefined || config.apiKey === '') {
       const guess = `${String(factory.name || model.name).toUpperCase()}_API_KEY`;

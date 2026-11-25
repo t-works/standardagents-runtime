@@ -1,6 +1,6 @@
 {
   "name": "@t-works/standardagents-runtime",
-  "version": "0.2.4",
+  "version": "0.2.5",
   "description": "Reference Standard Agents runtime: threads, subagents, hooks, tools and a sandboxed code execution engine (specification 0.2.0).",
   "license": "MIT",
   "type": "module",
@@ -44,7 +44,8 @@
     "build": "tsc -p tsconfig.build.json",
     "typecheck": "tsc -p tsconfig.json",
     "test": "node --test *.test.ts",
-    "prepack": "npm run build"
+    "prepack": "npm run build",
+    "docs": "node evals/docs/build.mjs"
   },
   "engines": {
     "node": ">=22.18"

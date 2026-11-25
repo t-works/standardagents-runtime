@@ -180,6 +180,9 @@ export function validateRegistry(registry: Registry): DefinitionIssue[] {
   const error = (message: string, issuePath: string): void => {
     issues.push({ code: 'agent_side_invalid', severity: 'error', message, path: issuePath });
   };
+  const warn = (message: string, issuePath: string): void => {
+    issues.push({ code: 'agent_side_invalid', severity: 'warning', message, path: issuePath });
+  };
 
   for (const [name, agent] of registry.agents) {
     issues.push(...validateAgentDefinition(agent));
@@ -241,7 +244,16 @@ export function validateRegistry(registry: Registry): DefinitionIssue[] {
     for (const fallback of model.fallbacks ?? []) {
       if (!registry.models.has(unqualify(fallback))) error(`Model '${name}' fallback '${fallback}' is undefined`, `${name}.fallbacks`);
     }
-    if (typeof model.provider !== 'function') error(`Model '${name}' has no provider factory`, `${name}.provider`);
+    // A model may be host-owned: the package names which model it asks for and the
+    // host supplies the connection, because credentials are the consumer's business
+    // and never the package's. That is a warning, not an error — `hasErrors` lets
+    // the package load, and the runtime names the model if no host ever supplies it.
+    if (typeof model.provider !== 'function') {
+      warn(
+        `Model '${name}' has no provider factory: the host must supply one (a provider package in models/, RuntimeOptions.hostProviders, or its own model registry)`,
+        `${name}.provider`,
+      );
+    }
   }
 
   return issues;
